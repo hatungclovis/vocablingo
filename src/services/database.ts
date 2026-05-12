@@ -1,0 +1,416 @@
+import { openDatabaseAsync, SQLiteDatabase } from 'expo-sqlite';
+import { Theme, Word, UserProgress, VocabularyData } from '../types';
+import vocabularyData from '../data/vocabulary.json';
+
+const DATABASE_NAME = 'vocalingo.db';
+
+let db: SQLiteDatabase | null = null;
+
+// Fonction pour obtenir ou créer la base de données
+const getDatabase = async (): Promise<SQLiteDatabase> => {
+  if (!db) {
+    db = await openDatabaseAsync(DATABASE_NAME);
+  }
+  return db;
+};
+
+/**
+ * Initialise la base de données et crée les tables si nécessaire
+ */
+export const initializeDatabase = async (): Promise<void> => {
+  try {
+    const database = await getDatabase();
+
+    // Créer toutes les tables
+    await database.execAsync(`
+      CREATE TABLE IF NOT EXISTS themes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        description TEXT NOT NULL,
+        icon TEXT NOT NULL,
+        word_count INTEGER DEFAULT 0
+      );
+
+      CREATE TABLE IF NOT EXISTS words (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        word TEXT NOT NULL,
+        definition TEXT NOT NULL,
+        theme_id INTEGER NOT NULL,
+        examples TEXT NOT NULL,
+        level TEXT NOT NULL,
+        synonyms TEXT NOT NULL,
+        antonyms TEXT NOT NULL,
+        FOREIGN KEY (theme_id) REFERENCES themes(id)
+      );
+
+      CREATE TABLE IF NOT EXISTS user_progress (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        word_id INTEGER NOT NULL UNIQUE,
+        easiness_factor REAL DEFAULT 2.5,
+        interval INTEGER DEFAULT 1,
+        repetitions INTEGER DEFAULT 0,
+        next_review_date TEXT,
+        last_reviewed_date TEXT,
+        times_seen INTEGER DEFAULT 0,
+        times_correct INTEGER DEFAULT 0,
+        FOREIGN KEY (word_id) REFERENCES words(id)
+      );
+
+      CREATE TABLE IF NOT EXISTS exercise_history (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        word_id INTEGER NOT NULL,
+        exercise_type TEXT NOT NULL,
+        is_correct INTEGER NOT NULL,
+        timestamp TEXT NOT NULL,
+        FOREIGN KEY (word_id) REFERENCES words(id)
+      );
+
+      CREATE TABLE IF NOT EXISTS user_stats (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        total_xp INTEGER DEFAULT 0,
+        level INTEGER DEFAULT 1,
+        current_streak INTEGER DEFAULT 0,
+        longest_streak INTEGER DEFAULT 0,
+        last_activity_date TEXT,
+        total_exercises_completed INTEGER DEFAULT 0,
+        total_correct_answers INTEGER DEFAULT 0,
+        perfect_exercises_count INTEGER DEFAULT 0,
+        achievements TEXT DEFAULT '[]'
+      );
+    `);
+
+    // Vérifier et initialiser user_stats
+    const statsCount = await database.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) as count FROM user_stats'
+    );
+
+    if (statsCount && statsCount.count === 0) {
+      await database.runAsync(
+        `INSERT INTO user_stats (total_xp, level, current_streak, longest_streak, achievements)
+         VALUES (0, 1, 0, 0, '[]')`
+      );
+    }
+
+    // Vérifier si les données ont déjà été importées
+    const themeCount = await database.getFirstAsync<{ count: number }>(
+      'SELECT COUNT(*) as count FROM themes'
+    );
+
+    if (themeCount && themeCount.count === 0) {
+      await importVocabularyData(database);
+    }
+
+    console.log('Database initialized successfully');
+  } catch (error) {
+    console.error('Error initializing database:', error);
+    throw error;
+  }
+};
+
+/**
+ * Importe les données du vocabulaire
+ */
+const importVocabularyData = async (database: SQLiteDatabase): Promise<void> => {
+  const data = vocabularyData as VocabularyData;
+
+  // Insérer les thèmes
+  for (const theme of data.themes) {
+    await database.runAsync(
+      'INSERT INTO themes (name, description, icon, word_count) VALUES (?, ?, ?, ?)',
+      [theme.name, theme.description, theme.icon, theme.word_count]
+    );
+  }
+
+  // Insérer les mots
+  for (const word of data.words) {
+    await database.runAsync(
+      'INSERT INTO words (word, definition, theme_id, examples, level, synonyms, antonyms) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      [
+        word.word,
+        word.definition,
+        word.theme_id,
+        JSON.stringify(word.examples),
+        word.level,
+        JSON.stringify(word.synonyms),
+        JSON.stringify(word.antonyms),
+      ]
+    );
+  }
+
+  console.log('Vocabulary data imported');
+};
+
+/**
+ * Récupère tous les thèmes
+ */
+export const getAllThemes = async (): Promise<Theme[]> => {
+  try {
+    const database = await getDatabase();
+    const themes = await database.getAllAsync<Theme>('SELECT * FROM themes ORDER BY id');
+    return themes;
+  } catch (error) {
+    console.error('Error fetching themes:', error);
+    return [];
+  }
+};
+
+/**
+ * Récupère tous les mots d'un thème
+ */
+export const getWordsByTheme = async (themeId: number): Promise<Word[]> => {
+  try {
+    const database = await getDatabase();
+    const rows = await database.getAllAsync<any>('SELECT * FROM words WHERE theme_id = ?', [themeId]);
+
+    return rows.map((row) => ({
+      id: row.id,
+      word: row.word,
+      definition: row.definition,
+      theme_id: row.theme_id,
+      examples: JSON.parse(row.examples),
+      level: row.level,
+      synonyms: JSON.parse(row.synonyms),
+      antonyms: JSON.parse(row.antonyms),
+    }));
+  } catch (error) {
+    console.error('Error fetching words by theme:', error);
+    return [];
+  }
+};
+
+/**
+ * Récupère tous les mots
+ */
+export const getAllWords = async (): Promise<Word[]> => {
+  try {
+    const database = await getDatabase();
+    const rows = await database.getAllAsync<any>('SELECT * FROM words');
+
+    return rows.map((row) => ({
+      id: row.id,
+      word: row.word,
+      definition: row.definition,
+      theme_id: row.theme_id,
+      examples: JSON.parse(row.examples),
+      level: row.level,
+      synonyms: JSON.parse(row.synonyms),
+      antonyms: JSON.parse(row.antonyms),
+    }));
+  } catch (error) {
+    console.error('Error fetching all words:', error);
+    return [];
+  }
+};
+
+/**
+ * Récupère toute la progression utilisateur (une seule requête).
+ * Indexée par word_id pour un accès en O(1).
+ */
+export const getAllProgress = async (): Promise<Map<number, UserProgress>> => {
+  try {
+    const database = await getDatabase();
+    const rows = await database.getAllAsync<UserProgress>('SELECT * FROM user_progress');
+    return new Map(rows.map((row) => [row.word_id, row]));
+  } catch (error) {
+    console.error('Error fetching all progress:', error);
+    return new Map();
+  }
+};
+
+/**
+ * Récupère la progression utilisateur pour un mot
+ */
+export const getUserProgress = async (wordId: number): Promise<UserProgress | null> => {
+  try {
+    const database = await getDatabase();
+    const progress = await database.getFirstAsync<UserProgress>(
+      'SELECT * FROM user_progress WHERE word_id = ?',
+      [wordId]
+    );
+    return progress || null;
+  } catch (error) {
+    console.error('Error fetching user progress:', error);
+    return null;
+  }
+};
+
+/**
+ * Initialise la progression pour un nouveau mot
+ */
+export const initializeWordProgress = async (wordId: number): Promise<void> => {
+  try {
+    const database = await getDatabase();
+    const now = new Date().toISOString();
+    await database.runAsync(
+      `INSERT INTO user_progress
+       (word_id, easiness_factor, interval, repetitions, next_review_date, last_reviewed_date, times_seen, times_correct)
+       VALUES (?, 2.5, 1, 0, ?, ?, 0, 0)`,
+      [wordId, now, now]
+    );
+  } catch (error) {
+    console.error('Error initializing word progress:', error);
+  }
+};
+
+/**
+ * Met à jour la progression utilisateur
+ */
+export const updateUserProgress = async (
+  progress: Omit<UserProgress, 'id'>
+): Promise<void> => {
+  try {
+    const database = await getDatabase();
+    await database.runAsync(
+      `UPDATE user_progress
+       SET easiness_factor = ?,
+           interval = ?,
+           repetitions = ?,
+           next_review_date = ?,
+           last_reviewed_date = ?,
+           times_seen = ?,
+           times_correct = ?
+       WHERE word_id = ?`,
+      [
+        progress.easiness_factor,
+        progress.interval,
+        progress.repetitions,
+        progress.next_review_date,
+        progress.last_reviewed_date,
+        progress.times_seen,
+        progress.times_correct,
+        progress.word_id,
+      ]
+    );
+  } catch (error) {
+    console.error('Error updating user progress:', error);
+  }
+};
+
+/**
+ * Récupère les mots à réviser aujourd'hui
+ */
+export const getWordsForReview = async (): Promise<Word[]> => {
+  try {
+    const database = await getDatabase();
+    const today = new Date().toISOString().split('T')[0];
+
+    const rows = await database.getAllAsync<any>(
+      `SELECT w.* FROM words w
+       INNER JOIN user_progress up ON w.id = up.word_id
+       WHERE date(up.next_review_date) <= date(?)
+       ORDER BY up.next_review_date ASC`,
+      [today]
+    );
+
+    return rows.map((row) => ({
+      id: row.id,
+      word: row.word,
+      definition: row.definition,
+      theme_id: row.theme_id,
+      examples: JSON.parse(row.examples),
+      level: row.level,
+      synonyms: JSON.parse(row.synonyms),
+      antonyms: JSON.parse(row.antonyms),
+    }));
+  } catch (error) {
+    console.error('Error fetching words for review:', error);
+    return [];
+  }
+};
+
+/**
+ * Ajoute un exercice à l'historique
+ */
+export const addExerciseToHistory = async (
+  wordId: number,
+  exerciseType: string,
+  isCorrect: boolean
+): Promise<void> => {
+  try {
+    const database = await getDatabase();
+    const timestamp = new Date().toISOString();
+    await database.runAsync(
+      'INSERT INTO exercise_history (word_id, exercise_type, is_correct, timestamp) VALUES (?, ?, ?, ?)',
+      [wordId, exerciseType, isCorrect ? 1 : 0, timestamp]
+    );
+  } catch (error) {
+    console.error('Error adding exercise to history:', error);
+  }
+};
+
+/**
+ * Récupère les statistiques utilisateur
+ */
+export const getUserStats = async (): Promise<any | null> => {
+  try {
+    const database = await getDatabase();
+    const stats = await database.getFirstAsync<any>('SELECT * FROM user_stats LIMIT 1');
+
+    if (stats) {
+      return {
+        ...stats,
+        achievements: JSON.parse(stats.achievements || '[]'),
+      };
+    }
+    return null;
+  } catch (error) {
+    console.error('Error fetching user stats:', error);
+    return null;
+  }
+};
+
+/**
+ * Met à jour les statistiques utilisateur
+ */
+export const updateUserStats = async (stats: any): Promise<void> => {
+  try {
+    const database = await getDatabase();
+    const updates: string[] = [];
+    const values: any[] = [];
+
+    if (stats.total_xp !== undefined) {
+      updates.push('total_xp = ?');
+      values.push(stats.total_xp);
+    }
+    if (stats.level !== undefined) {
+      updates.push('level = ?');
+      values.push(stats.level);
+    }
+    if (stats.current_streak !== undefined) {
+      updates.push('current_streak = ?');
+      values.push(stats.current_streak);
+    }
+    if (stats.longest_streak !== undefined) {
+      updates.push('longest_streak = ?');
+      values.push(stats.longest_streak);
+    }
+    if (stats.last_activity_date !== undefined) {
+      updates.push('last_activity_date = ?');
+      values.push(stats.last_activity_date);
+    }
+    if (stats.total_exercises_completed !== undefined) {
+      updates.push('total_exercises_completed = ?');
+      values.push(stats.total_exercises_completed);
+    }
+    if (stats.total_correct_answers !== undefined) {
+      updates.push('total_correct_answers = ?');
+      values.push(stats.total_correct_answers);
+    }
+    if (stats.perfect_exercises_count !== undefined) {
+      updates.push('perfect_exercises_count = ?');
+      values.push(stats.perfect_exercises_count);
+    }
+    if (stats.achievements !== undefined) {
+      updates.push('achievements = ?');
+      values.push(JSON.stringify(stats.achievements));
+    }
+
+    if (updates.length > 0) {
+      const query = `UPDATE user_stats SET ${updates.join(', ')} WHERE id = 1`;
+      await database.runAsync(query, values);
+    }
+  } catch (error) {
+    console.error('Error updating user stats:', error);
+  }
+};
+

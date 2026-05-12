@@ -1,0 +1,756 @@
+{
+  "themes": [
+    {
+      "name": "Vocabulaire professionnel",
+      "description": "Mots et expressions du monde du travail",
+      "icon": "briefcase",
+      "word_count": 15
+    },
+    {
+      "name": "Expressions idiomatiques",
+      "description": "Expressions françaises courantes",
+      "icon": "chat-bubble",
+      "word_count": 15
+    },
+    {
+      "name": "Nuances lexicales",
+      "description": "Différences subtiles entre mots similaires",
+      "icon": "glasses",
+      "word_count": 10
+    },
+    {
+      "name": "Registres de langue",
+      "description": "Du familier au soutenu",
+      "icon": "layers",
+      "word_count": 10
+    },
+    {
+      "name": "Émotions",
+      "description": "Vocabulaire des sentiments et émotions",
+      "icon": "heart",
+      "word_count": 10
+    }
+  ],
+  "words": [
+    {
+      "word": "éplucher",
+      "definition": "Examiner minutieusement un document, des données",
+      "theme_id": 1,
+      "examples": [
+        "J'ai passé la matinée à éplucher les rapports financiers.",
+        "Il faut éplucher le contrat avant de signer."
+      ],
+      "level": "C1",
+      "synonyms": ["examiner", "analyser", "scruter"],
+      "antonyms": ["survoler", "parcourir"]
+    },
+    {
+      "word": "peaufiner",
+      "definition": "Mettre au point dans les moindres détails",
+      "theme_id": 1,
+      "examples": [
+        "Nous devons peaufiner la présentation avant demain.",
+        "Elle a peaufiné son argumentaire pendant des heures."
+      ],
+      "level": "C1",
+      "synonyms": ["perfectionner", "fignoler", "raffiner"],
+      "antonyms": ["bâcler", "négliger"]
+    },
+    {
+      "word": "briefer",
+      "definition": "Donner des instructions concises à quelqu'un",
+      "theme_id": 1,
+      "examples": [
+        "Je vais briefer l'équipe sur le nouveau projet.",
+        "Le manager nous a briefés ce matin."
+      ],
+      "level": "B2",
+      "synonyms": ["informer", "instruire", "renseigner"],
+      "antonyms": []
+    },
+    {
+      "word": "arbitrer",
+      "definition": "Prendre une décision entre plusieurs options",
+      "theme_id": 1,
+      "examples": [
+        "Le directeur devra arbitrer entre ces deux propositions.",
+        "J'ai arbitré en faveur de la solution la plus économique."
+      ],
+      "level": "C1",
+      "synonyms": ["trancher", "décider", "choisir"],
+      "antonyms": ["hésiter"]
+    },
+    {
+      "word": "piloter",
+      "definition": "Diriger et gérer un projet",
+      "theme_id": 1,
+      "examples": [
+        "C'est elle qui pilote le projet de transformation digitale.",
+        "Il a piloté plusieurs initiatives stratégiques."
+      ],
+      "level": "B2",
+      "synonyms": ["diriger", "gérer", "conduire"],
+      "antonyms": ["suivre"]
+    },
+    {
+      "word": "monter en compétence",
+      "definition": "Acquérir de nouvelles compétences, progresser",
+      "theme_id": 1,
+      "examples": [
+        "J'ai besoin de monter en compétence sur ce logiciel.",
+        "L'équipe a monté en compétence grâce aux formations."
+      ],
+      "level": "B2",
+      "synonyms": ["progresser", "se former"],
+      "antonyms": ["stagner", "régresser"]
+    },
+    {
+      "word": "actionner",
+      "definition": "Mettre en œuvre, déclencher une action",
+      "theme_id": 1,
+      "examples": [
+        "Nous allons actionner ce levier dès la semaine prochaine.",
+        "Il faut actionner les bons leviers pour réussir."
+      ],
+      "level": "C1",
+      "synonyms": ["déclencher", "activer", "mettre en œuvre"],
+      "antonyms": ["bloquer", "freiner"]
+    },
+    {
+      "word": "rétroplanning",
+      "definition": "Planification à rebours d'un projet",
+      "theme_id": 1,
+      "examples": [
+        "Établissons un rétroplanning pour tenir les délais.",
+        "Le rétroplanning montre que nous devons commencer maintenant."
+      ],
+      "level": "C1",
+      "synonyms": ["planning inversé"],
+      "antonyms": []
+    },
+    {
+      "word": "challenger",
+      "definition": "Remettre en question, pousser à se dépasser",
+      "theme_id": 1,
+      "examples": [
+        "N'hésite pas à challenger mes idées.",
+        "Ce projet va challenger toute l'équipe."
+      ],
+      "level": "B2",
+      "synonyms": ["défier", "remettre en question"],
+      "antonyms": ["approuver", "valider"]
+    },
+    {
+      "word": "débriefer",
+      "definition": "Faire un compte-rendu après une mission",
+      "theme_id": 1,
+      "examples": [
+        "On se débriefe demain matin sur la réunion client.",
+        "Le débriefing a permis d'identifier les axes d'amélioration."
+      ],
+      "level": "B2",
+      "synonyms": ["faire le point", "analyser"],
+      "antonyms": []
+    },
+    {
+      "word": "benchmarker",
+      "definition": "Comparer avec les meilleures pratiques du marché",
+      "theme_id": 1,
+      "examples": [
+        "Nous avons benchmarké nos concurrents.",
+        "Il faut benchmarker avant de prendre une décision."
+      ],
+      "level": "C1",
+      "synonyms": ["comparer", "évaluer"],
+      "antonyms": []
+    },
+    {
+      "word": "fluidifier",
+      "definition": "Rendre plus fluide, faciliter un processus",
+      "theme_id": 1,
+      "examples": [
+        "Cette solution va fluidifier la communication.",
+        "Nous cherchons à fluidifier les processus internes."
+      ],
+      "level": "C1",
+      "synonyms": ["faciliter", "simplifier"],
+      "antonyms": ["complexifier", "ralentir"]
+    },
+    {
+      "word": "cadrage",
+      "definition": "Définition précise du périmètre d'un projet",
+      "theme_id": 1,
+      "examples": [
+        "La phase de cadrage est essentielle pour le projet.",
+        "Nous sommes encore en cadrage, rien n'est figé."
+      ],
+      "level": "C1",
+      "synonyms": ["définition", "délimitation"],
+      "antonyms": []
+    },
+    {
+      "word": "prioriser",
+      "definition": "Établir un ordre de priorité",
+      "theme_id": 1,
+      "examples": [
+        "Il faut prioriser les tâches urgentes.",
+        "Nous avons priorisé les fonctionnalités clés."
+      ],
+      "level": "B2",
+      "synonyms": ["hiérarchiser", "classer"],
+      "antonyms": []
+    },
+    {
+      "word": "escalader",
+      "definition": "Remonter un problème à un niveau hiérarchique supérieur",
+      "theme_id": 1,
+      "examples": [
+        "Je vais escalader ce problème à ma manager.",
+        "Le ticket a été escaladé au support niveau 2."
+      ],
+      "level": "B2",
+      "synonyms": ["remonter", "transférer"],
+      "antonyms": []
+    },
+    {
+      "word": "mettre les points sur les i",
+      "definition": "Clarifier les choses avec précision",
+      "theme_id": 2,
+      "examples": [
+        "Il est temps de mettre les points sur les i.",
+        "J'ai mis les points sur les i avec lui hier."
+      ],
+      "level": "C1",
+      "synonyms": ["clarifier", "préciser"],
+      "antonyms": ["rester vague"]
+    },
+    {
+      "word": "tourner autour du pot",
+      "definition": "Éviter d'aborder directement un sujet",
+      "theme_id": 2,
+      "examples": [
+        "Arrête de tourner autour du pot, dis-moi la vérité.",
+        "Il tourne autour du pot depuis 10 minutes."
+      ],
+      "level": "B2",
+      "synonyms": ["tergiverser", "biaiser"],
+      "antonyms": ["aller droit au but"]
+    },
+    {
+      "word": "avoir le vent en poupe",
+      "definition": "Connaître un grand succès, être en pleine réussite",
+      "theme_id": 2,
+      "examples": [
+        "Son entreprise a le vent en poupe cette année.",
+        "Après son livre, elle a le vent en poupe."
+      ],
+      "level": "C1",
+      "synonyms": ["réussir", "prospérer"],
+      "antonyms": ["péricliter", "décliner"]
+    },
+    {
+      "word": "tirer son épingle du jeu",
+      "definition": "Se sortir habilement d'une situation difficile",
+      "theme_id": 2,
+      "examples": [
+        "Il a su tirer son épingle du jeu malgré la crise.",
+        "Elle tire toujours son épingle du jeu."
+      ],
+      "level": "C1",
+      "synonyms": ["s'en sortir", "se débrouiller"],
+      "antonyms": ["échouer"]
+    },
+    {
+      "word": "mettre de l'eau dans son vin",
+      "definition": "Modérer ses exigences, faire des concessions",
+      "theme_id": 2,
+      "examples": [
+        "Il a dû mettre de l'eau dans son vin pour conclure l'accord.",
+        "On va tous devoir mettre de l'eau dans notre vin."
+      ],
+      "level": "C1",
+      "synonyms": ["faire des concessions", "modérer"],
+      "antonyms": ["rester intransigeant"]
+    },
+    {
+      "word": "avoir un train de retard",
+      "definition": "Ne pas être à jour, être en retard sur l'évolution",
+      "theme_id": 2,
+      "examples": [
+        "Leur technologie a un train de retard.",
+        "J'ai un train de retard sur les nouvelles séries."
+      ],
+      "level": "B2",
+      "synonyms": ["être dépassé", "être en retard"],
+      "antonyms": ["être à la pointe"]
+    },
+    {
+      "word": "jeter l'éponge",
+      "definition": "Abandonner, renoncer",
+      "theme_id": 2,
+      "examples": [
+        "Après trois tentatives, il a jeté l'éponge.",
+        "Ne jette pas l'éponge, persévère!"
+      ],
+      "level": "B2",
+      "synonyms": ["abandonner", "renoncer", "baisser les bras"],
+      "antonyms": ["persévérer", "continuer"]
+    },
+    {
+      "word": "couper l'herbe sous le pied",
+      "definition": "Devancer quelqu'un, le priver d'un avantage",
+      "theme_id": 2,
+      "examples": [
+        "Ils nous ont coupé l'herbe sous le pied en sortant leur produit avant.",
+        "Il m'a coupé l'herbe sous le pied en proposant l'idée le premier."
+      ],
+      "level": "C1",
+      "synonyms": ["devancer", "prendre de vitesse"],
+      "antonyms": []
+    },
+    {
+      "word": "tirer à boulets rouges",
+      "definition": "Critiquer violemment",
+      "theme_id": 2,
+      "examples": [
+        "La presse tire à boulets rouges sur ce projet.",
+        "Il a tiré à boulets rouges sur la réforme."
+      ],
+      "level": "C1",
+      "synonyms": ["critiquer violemment", "attaquer"],
+      "antonyms": ["défendre", "soutenir"]
+    },
+    {
+      "word": "prendre le taureau par les cornes",
+      "definition": "Affronter courageusement une difficulté",
+      "theme_id": 2,
+      "examples": [
+        "Il faut prendre le taureau par les cornes et régler ce problème.",
+        "Elle a pris le taureau par les cornes en demandant une augmentation."
+      ],
+      "level": "B2",
+      "synonyms": ["affronter", "s'attaquer à"],
+      "antonyms": ["fuir", "éviter"]
+    },
+    {
+      "word": "en faire tout un fromage",
+      "definition": "Exagérer l'importance d'un événement",
+      "theme_id": 2,
+      "examples": [
+        "Il en fait tout un fromage pour un simple retard.",
+        "N'en fais pas tout un fromage, ce n'est pas grave."
+      ],
+      "level": "B2",
+      "synonyms": ["exagérer", "dramatiser"],
+      "antonyms": ["minimiser", "relativiser"]
+    },
+    {
+      "word": "ne pas être sorti de l'auberge",
+      "definition": "Avoir encore de nombreuses difficultés à surmonter",
+      "theme_id": 2,
+      "examples": [
+        "Avec tous ces problèmes, on n'est pas sortis de l'auberge.",
+        "Tu n'es pas sorti de l'auberge avec ce dossier."
+      ],
+      "level": "C1",
+      "synonyms": ["avoir des difficultés"],
+      "antonyms": ["être tiré d'affaire"]
+    },
+    {
+      "word": "faire fausse route",
+      "definition": "Se tromper, aller dans la mauvaise direction",
+      "theme_id": 2,
+      "examples": [
+        "Je crois que tu fais fausse route avec cette stratégie.",
+        "Nous avons fait fausse route en investissant dans ce projet."
+      ],
+      "level": "B2",
+      "synonyms": ["se tromper", "s'égarer"],
+      "antonyms": ["avoir raison", "être sur la bonne voie"]
+    },
+    {
+      "word": "être au four et au moulin",
+      "definition": "S'occuper de plusieurs choses à la fois",
+      "theme_id": 2,
+      "examples": [
+        "Elle est au four et au moulin avec ses trois projets.",
+        "Je suis au four et au moulin en ce moment."
+      ],
+      "level": "C1",
+      "synonyms": ["être débordé", "être partout"],
+      "antonyms": []
+    },
+    {
+      "word": "donner sa langue au chat",
+      "definition": "Renoncer à deviner, demander la réponse",
+      "theme_id": 2,
+      "examples": [
+        "Je donne ma langue au chat, c'est quoi la réponse?",
+        "Personne n'a trouvé, on a tous donné notre langue au chat."
+      ],
+      "level": "B2",
+      "synonyms": ["renoncer à deviner", "abandonner"],
+      "antonyms": ["trouver", "deviner"]
+    },
+    {
+      "word": "observer",
+      "definition": "Regarder attentivement pour analyser",
+      "theme_id": 3,
+      "examples": [
+        "Le scientifique observe le phénomène.",
+        "J'ai observé son comportement."
+      ],
+      "level": "B2",
+      "synonyms": ["regarder", "examiner"],
+      "antonyms": ["ignorer"]
+    },
+    {
+      "word": "contempler",
+      "definition": "Regarder longuement avec admiration ou réflexion",
+      "theme_id": 3,
+      "examples": [
+        "Il contemplait le coucher de soleil.",
+        "Elle reste là à contempler le paysage."
+      ],
+      "level": "C1",
+      "synonyms": ["admirer", "regarder"],
+      "antonyms": []
+    },
+    {
+      "word": "efficace",
+      "definition": "Qui produit l'effet attendu",
+      "theme_id": 3,
+      "examples": [
+        "Cette méthode est très efficace.",
+        "Un remède efficace contre la douleur."
+      ],
+      "level": "B2",
+      "synonyms": ["performant", "opérant"],
+      "antonyms": ["inefficace"]
+    },
+    {
+      "word": "efficient",
+      "definition": "Qui produit l'effet avec un minimum de moyens",
+      "theme_id": 3,
+      "examples": [
+        "Un processus efficient économise des ressources.",
+        "Il faut être efficient dans l'utilisation du budget."
+      ],
+      "level": "C1",
+      "synonyms": ["optimal", "rationnel"],
+      "antonyms": ["gaspilleur"]
+    },
+    {
+      "word": "habiter",
+      "definition": "Avoir son domicile quelque part",
+      "theme_id": 3,
+      "examples": [
+        "J'habite à Paris.",
+        "Ils habitent une grande maison."
+      ],
+      "level": "B2",
+      "synonyms": ["résider", "loger"],
+      "antonyms": []
+    },
+    {
+      "word": "demeurer",
+      "definition": "Habiter (soutenu), rester",
+      "theme_id": 3,
+      "examples": [
+        "Il demeure au 5 rue de la Paix.",
+        "Cette question demeure sans réponse."
+      ],
+      "level": "C1",
+      "synonyms": ["habiter", "résider", "rester"],
+      "antonyms": ["partir"]
+    },
+    {
+      "word": "commencer",
+      "definition": "Faire la première partie d'une action",
+      "theme_id": 3,
+      "examples": [
+        "Je commence à comprendre.",
+        "La réunion commence à 14h."
+      ],
+      "level": "B2",
+      "synonyms": ["débuter", "entamer"],
+      "antonyms": ["finir", "terminer"]
+    },
+    {
+      "word": "amorcer",
+      "definition": "Commencer, déclencher (plus technique)",
+      "theme_id": 3,
+      "examples": [
+        "Amorcer un dialogue avec les partenaires.",
+        "Ce projet amorce une nouvelle phase."
+      ],
+      "level": "C1",
+      "synonyms": ["initier", "déclencher"],
+      "antonyms": ["achever"]
+    },
+    {
+      "word": "triste",
+      "definition": "Qui éprouve du chagrin",
+      "theme_id": 3,
+      "examples": [
+        "Elle est triste depuis son départ.",
+        "Un événement triste."
+      ],
+      "level": "B2",
+      "synonyms": ["malheureux", "chagrin"],
+      "antonyms": ["joyeux", "heureux"]
+    },
+    {
+      "word": "mélancolique",
+      "definition": "Tristesse douce et rêveuse",
+      "theme_id": 3,
+      "examples": [
+        "Une ambiance mélancolique.",
+        "Il a un tempérament mélancolique."
+      ],
+      "level": "C1",
+      "synonyms": ["nostalgique", "spleen"],
+      "antonyms": ["joyeux", "enjoué"]
+    },
+    {
+      "word": "bosser",
+      "definition": "Travailler (familier)",
+      "theme_id": 4,
+      "examples": [
+        "Je bosse sur ce projet depuis un mois.",
+        "Il bosse dans l'informatique."
+      ],
+      "level": "B2",
+      "synonyms": ["travailler", "turbiner"],
+      "antonyms": ["se reposer"]
+    },
+    {
+      "word": "travailler",
+      "definition": "Exercer une activité professionnelle (neutre)",
+      "theme_id": 4,
+      "examples": [
+        "Je travaille dans une entreprise de conseil.",
+        "Elle travaille dur pour réussir."
+      ],
+      "level": "B2",
+      "synonyms": ["œuvrer", "bosser"],
+      "antonyms": ["se reposer", "chômer"]
+    },
+    {
+      "word": "œuvrer",
+      "definition": "Travailler pour une cause (soutenu)",
+      "theme_id": 4,
+      "examples": [
+        "Ils œuvrent pour la paix dans le monde.",
+        "Elle œuvre à la préservation de l'environnement."
+      ],
+      "level": "C2",
+      "synonyms": ["agir", "contribuer"],
+      "antonyms": []
+    },
+    {
+      "word": "se pointer",
+      "definition": "Arriver (familier)",
+      "theme_id": 4,
+      "examples": [
+        "Il s'est pointé en retard comme d'habitude.",
+        "Ne te pointe pas trop tôt."
+      ],
+      "level": "B2",
+      "synonyms": ["arriver", "débarquer"],
+      "antonyms": ["partir"]
+    },
+    {
+      "word": "se présenter",
+      "definition": "Arriver, venir (neutre/soutenu)",
+      "theme_id": 4,
+      "examples": [
+        "Veuillez vous présenter à 9h précises.",
+        "Il se présente toujours à l'heure."
+      ],
+      "level": "B2",
+      "synonyms": ["venir", "arriver"],
+      "antonyms": ["s'absenter"]
+    },
+    {
+      "word": "piger",
+      "definition": "Comprendre (familier)",
+      "theme_id": 4,
+      "examples": [
+        "T'as pigé ce qu'il a dit?",
+        "Je pige rien à ses explications."
+      ],
+      "level": "B2",
+      "synonyms": ["comprendre", "capter"],
+      "antonyms": []
+    },
+    {
+      "word": "appréhender",
+      "definition": "Comprendre, saisir (soutenu)",
+      "theme_id": 4,
+      "examples": [
+        "Il est difficile d'appréhender toute la complexité du sujet.",
+        "J'appréhende mieux la situation maintenant."
+      ],
+      "level": "C1",
+      "synonyms": ["saisir", "comprendre"],
+      "antonyms": []
+    },
+    {
+      "word": "bouquin",
+      "definition": "Livre (familier)",
+      "theme_id": 4,
+      "examples": [
+        "J'ai lu un super bouquin ce week-end.",
+        "Il a toujours un bouquin dans son sac."
+      ],
+      "level": "B2",
+      "synonyms": ["livre"],
+      "antonyms": []
+    },
+    {
+      "word": "ouvrage",
+      "definition": "Livre (soutenu)",
+      "theme_id": 4,
+      "examples": [
+        "J'ai consulté plusieurs ouvrages sur ce sujet.",
+        "Un ouvrage de référence."
+      ],
+      "level": "C1",
+      "synonyms": ["livre", "œuvre"],
+      "antonyms": []
+    },
+    {
+      "word": "tchatcher",
+      "definition": "Parler beaucoup, bavarder (familier)",
+      "theme_id": 4,
+      "examples": [
+        "Ils sont en train de tchatcher depuis une heure.",
+        "Arrête de tchatcher et concentre-toi!"
+      ],
+      "level": "B2",
+      "synonyms": ["bavarder", "papoter"],
+      "antonyms": ["se taire"]
+    },
+    {
+      "word": "euphorique",
+      "definition": "État de joie intense et exaltation",
+      "theme_id": 5,
+      "examples": [
+        "Je suis euphorique après cette victoire!",
+        "L'annonce l'a rendu euphorique."
+      ],
+      "level": "C1",
+      "synonyms": ["exalté", "extatique", "ravi"],
+      "antonyms": ["déprimé", "abattu"]
+    },
+    {
+      "word": "accablé",
+      "definition": "Profondément découragé, écrasé par le chagrin",
+      "theme_id": 5,
+      "examples": [
+        "Il était accablé par cette nouvelle.",
+        "Elle se sentait accablée de douleur."
+      ],
+      "level": "C1",
+      "synonyms": ["abattu", "prostré", "anéanti"],
+      "antonyms": ["réjoui", "enthousiaste"]
+    },
+    {
+      "word": "serein",
+      "definition": "Calme et paisible, sans inquiétude",
+      "theme_id": 5,
+      "examples": [
+        "Il aborde l'examen d'un esprit serein.",
+        "Elle reste sereine malgré les difficultés."
+      ],
+      "level": "C1",
+      "synonyms": ["paisible", "tranquille", "apaisé"],
+      "antonyms": ["anxieux", "agité"]
+    },
+    {
+      "word": "déçu",
+      "definition": "Sentiment de tristesse suite à une attente non comblée",
+      "theme_id": 5,
+      "examples": [
+        "Je suis déçu par les résultats.",
+        "Elle était déçue de ne pas avoir été sélectionnée."
+      ],
+      "level": "B2",
+      "synonyms": ["désappointé", "désabusé"],
+      "antonyms": ["satisfait", "comblé"]
+    },
+    {
+      "word": "nostalgique",
+      "definition": "Sentiment de regret attendri du passé",
+      "theme_id": 5,
+      "examples": [
+        "Je suis nostalgique de mon enfance.",
+        "Cette chanson me rend nostalgique."
+      ],
+      "level": "B2",
+      "synonyms": ["mélancolique", "songeur"],
+      "antonyms": ["tourné vers l'avenir"]
+    },
+    {
+      "word": "amer",
+      "definition": "Ressenti mêlé de rancœur et de déception",
+      "theme_id": 5,
+      "examples": [
+        "Il garde un souvenir amer de cette expérience.",
+        "Elle éprouve une amertume profonde."
+      ],
+      "level": "C1",
+      "synonyms": ["désabusé", "aigri"],
+      "antonyms": ["doux", "apaisé"]
+    },
+    {
+      "word": "exalté",
+      "definition": "Dans un état d'enthousiasme extrême",
+      "theme_id": 5,
+      "examples": [
+        "Il était exalté à l'idée de partir en voyage.",
+        "La foule exaltée acclamait les joueurs."
+      ],
+      "level": "C1",
+      "synonyms": ["enthousiaste", "enflammé", "transporté"],
+      "antonyms": ["apathique", "indifférent"]
+    },
+    {
+      "word": "angoissé",
+      "definition": "Envahi par une anxiété intense",
+      "theme_id": 5,
+      "examples": [
+        "Je suis angoissé avant les examens.",
+        "Elle se sent angoissée par l'avenir."
+      ],
+      "level": "B2",
+      "synonyms": ["anxieux", "inquiet", "tourmenté"],
+      "antonyms": ["serein", "détendu"]
+    },
+    {
+      "word": "comblé",
+      "definition": "Pleinement satisfait et heureux",
+      "theme_id": 5,
+      "examples": [
+        "Je me sens comblé dans ma vie.",
+        "Elle est comblée par son travail."
+      ],
+      "level": "B2",
+      "synonyms": ["épanoui", "satisfait", "ravi"],
+      "antonyms": ["insatisfait", "frustré"]
+    },
+    {
+      "word": "bouleversé",
+      "definition": "Profondément troublé émotionnellement",
+      "theme_id": 5,
+      "examples": [
+        "J'ai été bouleversé par cette histoire.",
+        "Elle était bouleversée par la nouvelle."
+      ],
+      "level": "B2",
+      "synonyms": ["remué", "ému", "chamboulé"],
+      "antonyms": ["indifférent", "impassible"]
+    }
+  ]
+}

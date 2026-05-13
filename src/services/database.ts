@@ -91,14 +91,9 @@ export const initializeDatabase = async (): Promise<void> => {
       );
     }
 
-    // Vérifier si les données ont déjà été importées
-    const themeCount = await database.getFirstAsync<{ count: number }>(
-      'SELECT COUNT(*) as count FROM themes'
-    );
-
-    if (themeCount && themeCount.count === 0) {
-      await importVocabularyData(database);
-    }
+    // Synchroniser le vocabulaire avec le JSON (ajoute les nouveaux thèmes/mots
+    // si l'utilisateur a déjà la base initialisée avec une version antérieure)
+    await syncVocabularyData(database);
 
     console.log('Database initialized successfully');
   } catch (error) {
@@ -108,21 +103,43 @@ export const initializeDatabase = async (): Promise<void> => {
 };
 
 /**
- * Importe les données du vocabulaire
+ * Synchronise le vocabulaire JSON avec la base.
+ * - Insère les thèmes manquants (alignés sur l'ordre du JSON)
+ * - Insère les mots qui ne sont pas déjà présents (clé : word + theme_id)
+ * - Met à jour le compteur word_count des thèmes
  */
-const importVocabularyData = async (database: SQLiteDatabase): Promise<void> => {
+const syncVocabularyData = async (database: SQLiteDatabase): Promise<void> => {
   const data = vocabularyData as VocabularyData;
 
-  // Insérer les thèmes
+  // Synchroniser les thèmes : insérer ceux qui manquent (par position dans le JSON)
+  const existingThemes = await database.getAllAsync<{ id: number; name: string }>(
+    'SELECT id, name FROM themes ORDER BY id'
+  );
+  const existingThemeNames = new Set(existingThemes.map((t) => t.name));
+
   for (const theme of data.themes) {
-    await database.runAsync(
-      'INSERT INTO themes (name, description, icon, word_count) VALUES (?, ?, ?, ?)',
-      [theme.name, theme.description, theme.icon, theme.word_count]
-    );
+    if (!existingThemeNames.has(theme.name)) {
+      await database.runAsync(
+        'INSERT INTO themes (name, description, icon, word_count) VALUES (?, ?, ?, ?)',
+        [theme.name, theme.description, theme.icon, theme.word_count]
+      );
+    }
   }
 
-  // Insérer les mots
+  // Construire un index des mots existants (clé: theme_id|word)
+  const existingWords = await database.getAllAsync<{ word: string; theme_id: number }>(
+    'SELECT word, theme_id FROM words'
+  );
+  const existingWordKeys = new Set(
+    existingWords.map((w) => `${w.theme_id}|${w.word}`)
+  );
+
+  // Insérer les mots manquants
+  let inserted = 0;
   for (const word of data.words) {
+    const key = `${word.theme_id}|${word.word}`;
+    if (existingWordKeys.has(key)) continue;
+
     await database.runAsync(
       'INSERT INTO words (word, definition, theme_id, examples, level, synonyms, antonyms) VALUES (?, ?, ?, ?, ?, ?, ?)',
       [
@@ -135,9 +152,18 @@ const importVocabularyData = async (database: SQLiteDatabase): Promise<void> => 
         JSON.stringify(word.antonyms),
       ]
     );
+    inserted++;
   }
 
-  console.log('Vocabulary data imported');
+  // Mettre à jour les compteurs word_count des thèmes
+  await database.execAsync(`
+    UPDATE themes
+    SET word_count = (SELECT COUNT(*) FROM words WHERE words.theme_id = themes.id)
+  `);
+
+  if (inserted > 0) {
+    console.log(`Vocabulary sync: ${inserted} new words imported`);
+  }
 };
 
 /**

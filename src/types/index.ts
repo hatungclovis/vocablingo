@@ -14,7 +14,7 @@ export interface Word {
   definition: string;
   theme_id: number;
   examples: string[]; // Stocké comme JSON dans SQLite
-  level: 'B2' | 'C1' | 'C2';
+  level: 'B1' | 'B2' | 'C1' | 'C2';
   synonyms: string[]; // Stocké comme JSON dans SQLite
   antonyms: string[]; // Stocké comme JSON dans SQLite
 }

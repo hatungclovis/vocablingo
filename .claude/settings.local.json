@@ -14,7 +14,10 @@
       "Bash(npx tsc *)",
       "Bash(npx expo *)",
       "Bash(echo \"grep exit=$?\")",
-      "Bash(echo \"tsc exit=$?\")"
+      "Bash(echo \"tsc exit=$?\")",
+      "Write(/Users/hatungclovis/Desktop/Programming/vocablingo/.vocab_chunks/**)",
+      "Bash(node *)",
+      "Bash(eas --version)"
     ]
   }
 }

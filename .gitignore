@@ -21,3 +21,6 @@ pnpm-lock.yaml
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# generated vocabulary chunks (intermediate build artifacts)
+.vocab_chunks/

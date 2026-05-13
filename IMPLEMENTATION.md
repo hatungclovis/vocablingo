@@ -1,4 +1,4 @@
-# 📋 Implémentation Vocalingo — Reste à faire
+# 📋 Implémentation Vocablingo — Reste à faire
 
 État au **11 mai 2026**. Voir [README.md](./README.md) pour la vision produit.
 

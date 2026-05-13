@@ -1,10 +1,10 @@
-# Vocalingo 🇫🇷
+# Vocablingo 🇫🇷
 
 Application mobile Android d'apprentissage de vocabulaire français avancé, inspirée de Duolingo.
 
 ## 📋 Description
 
-Vocalingo est une application d'apprentissage conçue pour les francophones avancés qui souhaitent enrichir leur vocabulaire et améliorer leur expression orale. L'application utilise un système de répétition espacée (SRS) basé sur l'algorithme SuperMemo 2 pour optimiser la mémorisation à long terme.
+Vocablingo est une application d'apprentissage conçue pour les francophones avancés qui souhaitent enrichir leur vocabulaire et améliorer leur expression orale. L'application utilise un système de répétition espacée (SRS) basé sur l'algorithme SuperMemo 2 pour optimiser la mémorisation à long terme.
 
 **Public cible** : Personnes parlant couramment français (niveau B2+) souhaitant maîtriser un vocabulaire plus sophistiqué et nuancé.
 
@@ -52,7 +52,7 @@ Vocalingo est une application d'apprentissage conçue pour les francophones avan
 ## 📂 Structure du Projet
 
 ```
-Vocalingo/
+Vocablingo/
 ├── src/
 │   ├── components/           # Composants réutilisables
 │   │   ├── VocabCard.tsx
@@ -185,7 +185,7 @@ Ajustement EF:
 
 ```bash
 # Cloner le projet
-cd Vocalingo
+cd Vocablingo
 
 # Installer les dépendances
 npm install

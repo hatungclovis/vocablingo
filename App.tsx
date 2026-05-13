@@ -22,7 +22,7 @@ export default function App() {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#58CC02" />
-        <Text style={styles.loadingText}>Chargement de Vocalingo...</Text>
+        <Text style={styles.loadingText}>Chargement de Vocablingo...</Text>
       </View>
     );
   }

@@ -2,7 +2,7 @@ import { openDatabaseAsync, SQLiteDatabase } from 'expo-sqlite';
 import { Theme, Word, UserProgress, VocabularyData } from '../types';
 import vocabularyData from '../data/vocabulary.json';
 
-const DATABASE_NAME = 'vocalingo.db';
+const DATABASE_NAME = 'vocablingo.db';
 
 let db: SQLiteDatabase | null = null;
 

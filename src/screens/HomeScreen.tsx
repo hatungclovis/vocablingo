@@ -69,7 +69,7 @@ const HomeScreen: React.FC<Props> = ({ navigation }) => {
     <SafeAreaView style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>🇫🇷 Vocalingo</Text>
+          <Text style={styles.title}>🇫🇷 Vocablingo</Text>
           <Text style={styles.subtitle}>
             Enrichissez votre vocabulaire français
           </Text>

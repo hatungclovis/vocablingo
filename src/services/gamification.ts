@@ -1,5 +1,5 @@
 /**
- * Service de gamification pour Vocalingo
+ * Service de gamification pour Vocablingo
  * Gère les XP, niveaux, streaks et achievements
  */
 

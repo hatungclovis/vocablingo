@@ -41,7 +41,7 @@ const AppNavigator: React.FC = () => {
         <Stack.Screen
           name="Home"
           component={HomeScreen}
-          options={{ title: 'Vocalingo 🇫🇷' }}
+          options={{ title: 'Vocablingo 🇫🇷' }}
         />
         <Stack.Screen
           name="Themes"

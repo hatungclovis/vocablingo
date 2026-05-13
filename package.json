@@ -1,5 +1,5 @@
 {
-  "name": "vocalingo",
+  "name": "vocablingo",
   "version": "0.1.0",
   "description": "Application mobile Android d'apprentissage de vocabulaire français avancé, inspirée de Duolingo.",
   "main": "index.js",

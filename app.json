@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Vocalingo",
-    "slug": "vocalingo",
+    "name": "Vocablingo",
+    "slug": "vocablingo",
     "version": "0.1.0",
     "orientation": "portrait",
     "userInterfaceStyle": "light",
@@ -13,7 +13,7 @@
       "**/*"
     ],
     "android": {
-      "package": "com.vocalingo.app",
+      "package": "com.vocablingo.app",
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       }

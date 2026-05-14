@@ -45,6 +45,68 @@ export const XP_REWARDS = {
   THEME_COMPLETED: 100,
   DAILY_STREAK: 25,
   REVIEW_COMPLETED: 15,
+  DAILY_GOAL_REACHED: 30,
+};
+
+/**
+ * Met à jour le compteur d'objectif quotidien.
+ * - Si le compteur est sur un autre jour → reset à 1
+ * - Sinon incrémente
+ * - Détecte le franchissement du seuil pour bonus XP
+ */
+export const updateDailyProgress = (
+  goal: number,
+  previousCount: number,
+  previousDate: string | null
+): {
+  newCount: number;
+  newDate: string;
+  goalJustReached: boolean;
+  xpBonus: number;
+} => {
+  const todayISO = new Date().toISOString().split('T')[0];
+  const wasSameDay = previousDate?.split('T')[0] === todayISO;
+  const startCount = wasSameDay ? previousCount : 0;
+  const newCount = startCount + 1;
+  const goalJustReached = startCount < goal && newCount >= goal;
+
+  return {
+    newCount,
+    newDate: todayISO,
+    goalJustReached,
+    xpBonus: goalJustReached ? XP_REWARDS.DAILY_GOAL_REACHED : 0,
+  };
+};
+
+/**
+ * Compte d'aujourd'hui (0 si on est passé à un nouveau jour).
+ */
+export const getTodayProgress = (
+  storedCount: number,
+  storedDate: string | null
+): number => {
+  if (!storedDate) return 0;
+  const todayISO = new Date().toISOString().split('T')[0];
+  return storedDate.split('T')[0] === todayISO ? storedCount : 0;
+};
+
+/**
+ * Vérifie si le streak doit être cassé (>1 jour depuis la dernière activité).
+ * À appeler au démarrage de l'app pour rafraîchir la valeur affichée.
+ */
+export const isStreakBroken = (
+  lastActivityDate: string | null,
+  currentStreak: number
+): boolean => {
+  if (!lastActivityDate || currentStreak === 0) return false;
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const last = new Date(lastActivityDate);
+  last.setHours(0, 0, 0, 0);
+  const days = Math.floor(
+    (today.getTime() - last.getTime()) / (1000 * 60 * 60 * 24)
+  );
+  return days > 1;
 };
 
 // Définition des achievements

@@ -3,6 +3,7 @@ import { StyleSheet, Text, View, ActivityIndicator } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { initializeDatabase } from './src/services/database';
 import AppNavigator from './src/navigation/AppNavigator';
+import { ThemeProvider } from './src/theme/ThemeContext';
 
 export default function App() {
   const [isLoading, setIsLoading] = useState(true);
@@ -38,10 +39,10 @@ export default function App() {
   }
 
   return (
-    <>
+    <ThemeProvider>
       <AppNavigator />
       <StatusBar style="auto" />
-    </>
+    </ThemeProvider>
   );
 }
 

@@ -17,6 +17,7 @@ export interface Word {
   level: 'B1' | 'B2' | 'C1' | 'C2';
   synonyms: string[]; // Stocké comme JSON dans SQLite
   antonyms: string[]; // Stocké comme JSON dans SQLite
+  nuance_with?: string[]; // Paires de mots à nuance (ex: observer↔contempler)
 }
 
 // Types pour la progression utilisateur (SRS)

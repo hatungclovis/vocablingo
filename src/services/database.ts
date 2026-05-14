@@ -40,6 +40,7 @@ export const initializeDatabase = async (): Promise<void> => {
         level TEXT NOT NULL,
         synonyms TEXT NOT NULL,
         antonyms TEXT NOT NULL,
+        nuance_with TEXT DEFAULT '[]',
         FOREIGN KEY (theme_id) REFERENCES themes(id)
       );
 
@@ -75,9 +76,23 @@ export const initializeDatabase = async (): Promise<void> => {
         total_exercises_completed INTEGER DEFAULT 0,
         total_correct_answers INTEGER DEFAULT 0,
         perfect_exercises_count INTEGER DEFAULT 0,
-        achievements TEXT DEFAULT '[]'
+        achievements TEXT DEFAULT '[]',
+        daily_goal INTEGER DEFAULT 5,
+        daily_progress_count INTEGER DEFAULT 0,
+        daily_progress_date TEXT,
+        theme_preference TEXT DEFAULT 'system'
       );
     `);
+
+    // Migrations idempotentes pour bases existantes
+    await ensureColumn(database, 'words', 'nuance_with', "TEXT DEFAULT '[]'");
+    await ensureColumn(database, 'user_stats', 'daily_goal', 'INTEGER DEFAULT 5');
+    await ensureColumn(database, 'user_stats', 'daily_progress_count', 'INTEGER DEFAULT 0');
+    await ensureColumn(database, 'user_stats', 'daily_progress_date', 'TEXT');
+    await ensureColumn(database, 'user_stats', 'theme_preference', "TEXT DEFAULT 'system'");
+
+    // Full-text search (FTS5)
+    await setupFTS(database);
 
     // Vérifier et initialiser user_stats
     const statsCount = await database.getFirstAsync<{ count: number }>(
@@ -99,6 +114,123 @@ export const initializeDatabase = async (): Promise<void> => {
   } catch (error) {
     console.error('Error initializing database:', error);
     throw error;
+  }
+};
+
+/**
+ * Ajoute une colonne à une table si elle n'existe pas encore.
+ * Migration idempotente pour bases créées avant l'ajout du champ.
+ */
+const ensureColumn = async (
+  database: SQLiteDatabase,
+  table: string,
+  column: string,
+  definition: string
+): Promise<void> => {
+  const cols = await database.getAllAsync<{ name: string }>(
+    `PRAGMA table_info(${table})`
+  );
+  if (!cols.some((c) => c.name === column)) {
+    await database.execAsync(
+      `ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`
+    );
+  }
+};
+
+/**
+ * Crée la table FTS5 + triggers + backfill initial (idempotent).
+ */
+const setupFTS = async (database: SQLiteDatabase): Promise<void> => {
+  await database.execAsync(`
+    CREATE VIRTUAL TABLE IF NOT EXISTS words_fts USING fts5(
+      word, definition, examples,
+      content='words',
+      content_rowid='id',
+      tokenize='unicode61 remove_diacritics 1'
+    );
+
+    CREATE TRIGGER IF NOT EXISTS words_ai AFTER INSERT ON words BEGIN
+      INSERT INTO words_fts(rowid, word, definition, examples)
+      VALUES (new.id, new.word, new.definition, new.examples);
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS words_ad AFTER DELETE ON words BEGIN
+      INSERT INTO words_fts(words_fts, rowid, word, definition, examples)
+      VALUES ('delete', old.id, old.word, old.definition, old.examples);
+    END;
+
+    CREATE TRIGGER IF NOT EXISTS words_au AFTER UPDATE ON words BEGIN
+      INSERT INTO words_fts(words_fts, rowid, word, definition, examples)
+      VALUES ('delete', old.id, old.word, old.definition, old.examples);
+      INSERT INTO words_fts(rowid, word, definition, examples)
+      VALUES (new.id, new.word, new.definition, new.examples);
+    END;
+  `);
+
+  // Backfill : si la FTS est vide mais words ne l'est pas, repeupler
+  const ftsCount = await database.getFirstAsync<{ c: number }>(
+    'SELECT COUNT(*) AS c FROM words_fts'
+  );
+  const wordsCount = await database.getFirstAsync<{ c: number }>(
+    'SELECT COUNT(*) AS c FROM words'
+  );
+  if (
+    ftsCount &&
+    wordsCount &&
+    ftsCount.c === 0 &&
+    wordsCount.c > 0
+  ) {
+    await database.execAsync(`
+      INSERT INTO words_fts(rowid, word, definition, examples)
+      SELECT id, word, definition, examples FROM words
+    `);
+  }
+};
+
+/**
+ * Recherche full-text sur les mots (FTS5).
+ * Renvoie au maximum `limit` résultats.
+ */
+export const searchWords = async (
+  query: string,
+  limit: number = 30
+): Promise<Word[]> => {
+  const trimmed = query.trim();
+  if (trimmed.length < 2) return [];
+
+  try {
+    const database = await getDatabase();
+    // FTS5 préfixe (prefix-match): chaque token suivi de *
+    const ftsQuery = trimmed
+      .split(/\s+/)
+      .map((t) => t.replace(/['"]/g, ''))
+      .filter((t) => t.length > 0)
+      .map((t) => `${t}*`)
+      .join(' ');
+
+    const rows = await database.getAllAsync<any>(
+      `SELECT w.* FROM words w
+       INNER JOIN words_fts f ON w.id = f.rowid
+       WHERE words_fts MATCH ?
+       ORDER BY rank
+       LIMIT ?`,
+      [ftsQuery, limit]
+    );
+
+    return rows.map((row) => ({
+      id: row.id,
+      word: row.word,
+      definition: row.definition,
+      theme_id: row.theme_id,
+      examples: JSON.parse(row.examples),
+      level: row.level,
+      synonyms: JSON.parse(row.synonyms),
+      antonyms: JSON.parse(row.antonyms),
+      nuance_with: row.nuance_with ? JSON.parse(row.nuance_with) : [],
+    }));
+  } catch (error) {
+    console.error('Error searching words:', error);
+    return [];
   }
 };
 
@@ -141,7 +273,7 @@ const syncVocabularyData = async (database: SQLiteDatabase): Promise<void> => {
     if (existingWordKeys.has(key)) continue;
 
     await database.runAsync(
-      'INSERT INTO words (word, definition, theme_id, examples, level, synonyms, antonyms) VALUES (?, ?, ?, ?, ?, ?, ?)',
+      'INSERT INTO words (word, definition, theme_id, examples, level, synonyms, antonyms, nuance_with) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
       [
         word.word,
         word.definition,
@@ -150,9 +282,20 @@ const syncVocabularyData = async (database: SQLiteDatabase): Promise<void> => {
         word.level,
         JSON.stringify(word.synonyms),
         JSON.stringify(word.antonyms),
+        JSON.stringify(word.nuance_with ?? []),
       ]
     );
     inserted++;
+  }
+
+  // Mettre à jour nuance_with sur les mots déjà présents (champ ajouté après coup)
+  for (const word of data.words) {
+    if (word.nuance_with && word.nuance_with.length > 0) {
+      await database.runAsync(
+        'UPDATE words SET nuance_with = ? WHERE theme_id = ? AND word = ? AND (nuance_with IS NULL OR nuance_with = \'[]\')',
+        [JSON.stringify(word.nuance_with), word.theme_id, word.word]
+      );
+    }
   }
 
   // Mettre à jour les compteurs word_count des thèmes
@@ -197,6 +340,7 @@ export const getWordsByTheme = async (themeId: number): Promise<Word[]> => {
       level: row.level,
       synonyms: JSON.parse(row.synonyms),
       antonyms: JSON.parse(row.antonyms),
+      nuance_with: row.nuance_with ? JSON.parse(row.nuance_with) : [],
     }));
   } catch (error) {
     console.error('Error fetching words by theme:', error);
@@ -221,6 +365,7 @@ export const getAllWords = async (): Promise<Word[]> => {
       level: row.level,
       synonyms: JSON.parse(row.synonyms),
       antonyms: JSON.parse(row.antonyms),
+      nuance_with: row.nuance_with ? JSON.parse(row.nuance_with) : [],
     }));
   } catch (error) {
     console.error('Error fetching all words:', error);
@@ -268,7 +413,7 @@ export const initializeWordProgress = async (wordId: number): Promise<void> => {
     const database = await getDatabase();
     const now = new Date().toISOString();
     await database.runAsync(
-      `INSERT INTO user_progress
+      `INSERT OR IGNORE INTO user_progress
        (word_id, easiness_factor, interval, repetitions, next_review_date, last_reviewed_date, times_seen, times_correct)
        VALUES (?, 2.5, 1, 0, ?, ?, 0, 0)`,
       [wordId, now, now]
@@ -337,6 +482,7 @@ export const getWordsForReview = async (): Promise<Word[]> => {
       level: row.level,
       synonyms: JSON.parse(row.synonyms),
       antonyms: JSON.parse(row.antonyms),
+      nuance_with: row.nuance_with ? JSON.parse(row.nuance_with) : [],
     }));
   } catch (error) {
     console.error('Error fetching words for review:', error);
@@ -386,6 +532,36 @@ export const getUserStats = async (): Promise<any | null> => {
 };
 
 /**
+ * Réinitialise toute la progression utilisateur (XP, streak, achievements,
+ * progress des mots, historique). Préserve les thèmes/mots et la préférence
+ * de thème UI.
+ */
+export const resetUserProgress = async (): Promise<void> => {
+  try {
+    const database = await getDatabase();
+    const stats = await getUserStats();
+    const themePref = stats?.theme_preference ?? 'system';
+    const dailyGoal = stats?.daily_goal ?? 5;
+
+    await database.execAsync(`
+      DELETE FROM user_progress;
+      DELETE FROM exercise_history;
+      DELETE FROM user_stats;
+    `);
+
+    await database.runAsync(
+      `INSERT INTO user_stats
+       (total_xp, level, current_streak, longest_streak, achievements, theme_preference, daily_goal)
+       VALUES (0, 1, 0, 0, '[]', ?, ?)`,
+      [themePref, dailyGoal]
+    );
+  } catch (error) {
+    console.error('Error resetting user progress:', error);
+    throw error;
+  }
+};
+
+/**
  * Met à jour les statistiques utilisateur
  */
 export const updateUserStats = async (stats: any): Promise<void> => {
@@ -429,6 +605,22 @@ export const updateUserStats = async (stats: any): Promise<void> => {
     if (stats.achievements !== undefined) {
       updates.push('achievements = ?');
       values.push(JSON.stringify(stats.achievements));
+    }
+    if (stats.daily_goal !== undefined) {
+      updates.push('daily_goal = ?');
+      values.push(stats.daily_goal);
+    }
+    if (stats.daily_progress_count !== undefined) {
+      updates.push('daily_progress_count = ?');
+      values.push(stats.daily_progress_count);
+    }
+    if (stats.daily_progress_date !== undefined) {
+      updates.push('daily_progress_date = ?');
+      values.push(stats.daily_progress_date);
+    }
+    if (stats.theme_preference !== undefined) {
+      updates.push('theme_preference = ?');
+      values.push(stats.theme_preference);
     }
 
     if (updates.length > 0) {

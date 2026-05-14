@@ -5,11 +5,30 @@ import {
   View,
   ScrollView,
   SafeAreaView,
+  TouchableOpacity,
 } from 'react-native';
+import { StackNavigationProp } from '@react-navigation/stack';
+import { RootStackParamList } from '../navigation/AppNavigator';
 import { getAllWords, getAllProgress } from '../services/database';
 import { calculateSuccessRate, getMasteryLevel } from '../services/srs';
+import StatCard from '../components/StatCard';
+import ProgressBar from '../components/ProgressBar';
+import { useTheme } from '../theme/ThemeContext';
+import { Colors } from '../theme/colors';
 
-const ProgressScreen: React.FC = () => {
+type ProgressScreenNavigationProp = StackNavigationProp<
+  RootStackParamList,
+  'Progress'
+>;
+
+interface Props {
+  navigation: ProgressScreenNavigationProp;
+}
+
+const ProgressScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
+
   const [stats, setStats] = useState({
     totalWords: 0,
     wordsLearned: 0,
@@ -93,22 +112,10 @@ const ProgressScreen: React.FC = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>📊 Vue d'ensemble</Text>
           <View style={styles.statsGrid}>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{stats.totalWords}</Text>
-              <Text style={styles.statLabel}>Mots totaux</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{stats.wordsLearned}</Text>
-              <Text style={styles.statLabel}>Mots appris</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{stats.totalExercises}</Text>
-              <Text style={styles.statLabel}>Exercices</Text>
-            </View>
-            <View style={styles.statCard}>
-              <Text style={styles.statValue}>{stats.averageSuccessRate}%</Text>
-              <Text style={styles.statLabel}>Taux de réussite</Text>
-            </View>
+            <StatCard value={stats.totalWords} label="Mots totaux" style={styles.gridItem} />
+            <StatCard value={stats.wordsLearned} label="Mots appris" style={styles.gridItem} />
+            <StatCard value={stats.totalExercises} label="Exercices" style={styles.gridItem} />
+            <StatCard value={`${stats.averageSuccessRate}%`} label="Taux de réussite" style={styles.gridItem} />
           </View>
         </View>
 
@@ -116,22 +123,22 @@ const ProgressScreen: React.FC = () => {
           <Text style={styles.sectionTitle}>🎯 Niveau de maîtrise</Text>
           <View style={styles.masteryContainer}>
             <View style={styles.masteryRow}>
-              <View style={[styles.masteryDot, { backgroundColor: '#e0e0e0' }]} />
+              <View style={[styles.masteryDot, { backgroundColor: colors.masteryNew }]} />
               <Text style={styles.masteryLabel}>Nouveaux</Text>
               <Text style={styles.masteryValue}>{stats.wordsNew}</Text>
             </View>
             <View style={styles.masteryRow}>
-              <View style={[styles.masteryDot, { backgroundColor: '#FFB800' }]} />
+              <View style={[styles.masteryDot, { backgroundColor: colors.masteryLearning }]} />
               <Text style={styles.masteryLabel}>En apprentissage</Text>
               <Text style={styles.masteryValue}>{stats.wordsLearning}</Text>
             </View>
             <View style={styles.masteryRow}>
-              <View style={[styles.masteryDot, { backgroundColor: '#1CB0F6' }]} />
+              <View style={[styles.masteryDot, { backgroundColor: colors.masteryReview }]} />
               <Text style={styles.masteryLabel}>En révision</Text>
               <Text style={styles.masteryValue}>{stats.wordsReview}</Text>
             </View>
             <View style={styles.masteryRow}>
-              <View style={[styles.masteryDot, { backgroundColor: '#58CC02' }]} />
+              <View style={[styles.masteryDot, { backgroundColor: colors.masteryMastered }]} />
               <Text style={styles.masteryLabel}>Maîtrisés</Text>
               <Text style={styles.masteryValue}>{stats.wordsMastered}</Text>
             </View>
@@ -141,20 +148,12 @@ const ProgressScreen: React.FC = () => {
         <View style={styles.section}>
           <Text style={styles.sectionTitle}>💪 Progression globale</Text>
           <View style={styles.progressContainer}>
-            <View style={styles.progressBarOuter}>
-              <View
-                style={[
-                  styles.progressBarInner,
-                  {
-                    width: `${
-                      stats.totalWords > 0
-                        ? (stats.wordsLearned / stats.totalWords) * 100
-                        : 0
-                    }%`,
-                  },
-                ]}
-              />
-            </View>
+            <ProgressBar
+              current={stats.wordsLearned}
+              total={stats.totalWords}
+              showLabel={false}
+              height={20}
+            />
             <Text style={styles.progressText}>
               {stats.wordsLearned} / {stats.totalWords} mots commencés (
               {stats.totalWords > 0
@@ -164,6 +163,13 @@ const ProgressScreen: React.FC = () => {
             </Text>
           </View>
         </View>
+
+        <TouchableOpacity
+          style={styles.achievementsButton}
+          onPress={() => navigation.navigate('Achievements')}
+        >
+          <Text style={styles.achievementsButtonText}>🏆 Voir mes trophées</Text>
+        </TouchableOpacity>
 
         <View style={styles.encouragementBox}>
           <Text style={styles.encouragementText}>
@@ -179,105 +185,94 @@ const ProgressScreen: React.FC = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  scrollContent: {
-    padding: 20,
-  },
-  section: {
-    marginBottom: 24,
-  },
-  sectionTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 16,
-  },
-  statsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
-  },
-  statCard: {
-    width: '48%',
-    backgroundColor: '#f8f8f8',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  statValue: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    color: '#58CC02',
-  },
-  statLabel: {
-    fontSize: 12,
-    color: '#666',
-    marginTop: 4,
-    textAlign: 'center',
-  },
-  masteryContainer: {
-    backgroundColor: '#f8f8f8',
-    borderRadius: 12,
-    padding: 16,
-  },
-  masteryRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-  },
-  masteryDot: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 12,
-  },
-  masteryLabel: {
-    flex: 1,
-    fontSize: 16,
-  },
-  masteryValue: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#333',
-  },
-  progressContainer: {
-    backgroundColor: '#f8f8f8',
-    borderRadius: 12,
-    padding: 16,
-  },
-  progressBarOuter: {
-    height: 20,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 10,
-    overflow: 'hidden',
-    marginBottom: 12,
-  },
-  progressBarInner: {
-    height: '100%',
-    backgroundColor: '#58CC02',
-    borderRadius: 10,
-  },
-  progressText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
-  encouragementBox: {
-    backgroundColor: '#E8F5E9',
-    padding: 16,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#58CC02',
-  },
-  encouragementText: {
-    fontSize: 16,
-    color: '#2E7D32',
-    textAlign: 'center',
-  },
-});
+const makeStyles = (c: Colors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: c.background,
+    },
+    scrollContent: {
+      padding: 20,
+    },
+    section: {
+      marginBottom: 24,
+    },
+    sectionTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 16,
+      color: c.text,
+    },
+    statsGrid: {
+      flexDirection: 'row',
+      flexWrap: 'wrap',
+      justifyContent: 'space-between',
+    },
+    gridItem: {
+      width: '48%',
+      marginBottom: 12,
+    },
+    masteryContainer: {
+      backgroundColor: c.surface,
+      borderRadius: 12,
+      padding: 16,
+    },
+    masteryRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      marginBottom: 12,
+    },
+    masteryDot: {
+      width: 12,
+      height: 12,
+      borderRadius: 6,
+      marginRight: 12,
+    },
+    masteryLabel: {
+      flex: 1,
+      fontSize: 16,
+      color: c.text,
+    },
+    masteryValue: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: c.textSecondary,
+    },
+    progressContainer: {
+      backgroundColor: c.surface,
+      borderRadius: 12,
+      padding: 16,
+      gap: 12,
+    },
+    progressText: {
+      fontSize: 14,
+      color: c.textMuted,
+      textAlign: 'center',
+    },
+    achievementsButton: {
+      backgroundColor: c.warning,
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginBottom: 24,
+    },
+    achievementsButtonText: {
+      fontSize: 16,
+      fontWeight: 'bold',
+      color: '#fff',
+    },
+    encouragementBox: {
+      backgroundColor: c.primaryHighlight,
+      padding: 16,
+      borderRadius: 12,
+      borderLeftWidth: 4,
+      borderLeftColor: c.primary,
+    },
+    encouragementText: {
+      fontSize: 16,
+      color: c.success,
+      textAlign: 'center',
+    },
+  });
 
 export default ProgressScreen;

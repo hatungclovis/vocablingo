@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import {
   StyleSheet,
   Text,
@@ -6,7 +6,10 @@ import {
   TouchableOpacity,
   SafeAreaView,
   ScrollView,
+  Animated,
+  Dimensions,
 } from 'react-native';
+import ConfettiCannon from 'react-native-confetti-cannon';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { RouteProp } from '@react-navigation/native';
 import { RootStackParamList } from '../navigation/AppNavigator';
@@ -35,7 +38,12 @@ import {
   updateStreak,
   checkAchievements,
   calculateLevel,
+  updateDailyProgress,
+  Achievement,
 } from '../services/gamification';
+import ProgressBar from '../components/ProgressBar';
+import { useTheme } from '../theme/ThemeContext';
+import { Colors } from '../theme/colors';
 
 type ExerciseScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -49,6 +57,9 @@ interface Props {
 }
 
 const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
+
   const { words } = route.params;
   const [exercises, setExercises] = useState<Exercise[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -60,6 +71,11 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
   const [leveledUp, setLeveledUp] = useState(false);
   const [newLevel, setNewLevel] = useState(1);
   const [streakUpdated, setStreakUpdated] = useState(false);
+  const [unlockedAchievements, setUnlockedAchievements] = useState<Achievement[]>([]);
+  const [dailyGoalReached, setDailyGoalReached] = useState(false);
+  const shakeAnim = useRef(new Animated.Value(0)).current;
+  const confettiRef = useRef<ConfettiCannon | null>(null);
+  const screenWidth = Dimensions.get('window').width;
 
   useEffect(() => {
     loadExercises();
@@ -77,6 +93,17 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
 
   const currentExercise = exercises[currentIndex];
 
+  const triggerShake = () => {
+    shakeAnim.setValue(0);
+    Animated.sequence([
+      Animated.timing(shakeAnim, { toValue: 10, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -10, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 8, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: -8, duration: 60, useNativeDriver: true }),
+      Animated.timing(shakeAnim, { toValue: 0, duration: 60, useNativeDriver: true }),
+    ]).start();
+  };
+
   const handleAnswerSelect = async (answerIndex: number) => {
     if (isAnswered) return;
 
@@ -87,6 +114,8 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
 
     if (isCorrect) {
       setCorrectAnswers((prev) => prev + 1);
+    } else {
+      triggerShake();
     }
 
     // Sauvegarder dans l'historique
@@ -139,7 +168,16 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
       if (!stats) return;
 
       // Calculer les XP gagnés
-      const xp = calculateExerciseXP(correctAnswers, exercises.length);
+      let xp = calculateExerciseXP(correctAnswers, exercises.length);
+
+      // Objectif quotidien
+      const daily = updateDailyProgress(
+        stats.daily_goal ?? 5,
+        stats.daily_progress_count ?? 0,
+        stats.daily_progress_date ?? null
+      );
+      xp += daily.xpBonus;
+      setDailyGoalReached(daily.goalJustReached);
       setXpEarned(xp);
 
       // Mettre à jour les stats
@@ -193,6 +231,8 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
         newPerfectCount
       );
 
+      setUnlockedAchievements(newAchievements);
+
       // Ajouter les nouveaux achievements débloqués
       const achievementIds = [
         ...stats.achievements,
@@ -210,6 +250,8 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
         total_correct_answers: stats.total_correct_answers + correctAnswers,
         perfect_exercises_count: newPerfectCount,
         achievements: achievementIds,
+        daily_progress_count: daily.newCount,
+        daily_progress_date: daily.newDate,
       });
     } catch (error) {
       console.error('Error processing gamification rewards:', error);
@@ -234,8 +276,23 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
     const score = calculateScore(correctAnswers, exercises.length);
     const feedbackMessage = getFeedbackMessage(score);
 
+    const shouldConfetti =
+      correctAnswers === exercises.length || leveledUp || dailyGoalReached;
     return (
       <SafeAreaView style={styles.container}>
+        {shouldConfetti && (
+          <ConfettiCannon
+            ref={(r) => {
+              confettiRef.current = r;
+            }}
+            count={120}
+            origin={{ x: screenWidth / 2, y: 0 }}
+            fadeOut
+            autoStart
+            explosionSpeed={350}
+            fallSpeed={2500}
+          />
+        )}
         <ScrollView contentContainerStyle={styles.resultsContainer}>
           <Text style={styles.resultsEmoji}>
             {score >= 75 ? '🎉' : score >= 50 ? '👍' : '📚'}
@@ -266,6 +323,30 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
               {streakUpdated && (
                 <Text style={styles.streakText}>🔥 Streak maintenu!</Text>
               )}
+              {dailyGoalReached && (
+                <Text style={styles.dailyGoalText}>
+                  🎯 Objectif quotidien atteint !
+                </Text>
+              )}
+            </View>
+          )}
+
+          {unlockedAchievements.length > 0 && (
+            <View style={styles.achievementsBox}>
+              <Text style={styles.achievementsTitle}>
+                🏆 {unlockedAchievements.length === 1
+                  ? 'Trophée débloqué !'
+                  : `${unlockedAchievements.length} trophées débloqués !`}
+              </Text>
+              {unlockedAchievements.map((a) => (
+                <View key={a.id} style={styles.achievementRow}>
+                  <Text style={styles.achievementIcon}>{a.icon}</Text>
+                  <View style={styles.achievementBody}>
+                    <Text style={styles.achievementName}>{a.title}</Text>
+                    <Text style={styles.achievementDesc}>{a.description}</Text>
+                  </View>
+                </View>
+              ))}
             </View>
           )}
 
@@ -294,16 +375,11 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
         <View style={styles.progressContainer}>
-          <View style={styles.progressBar}>
-            <View
-              style={[
-                styles.progressFill,
-                {
-                  width: `${((currentIndex + 1) / exercises.length) * 100}%`,
-                },
-              ]}
-            />
-          </View>
+          <ProgressBar
+            current={currentIndex + 1}
+            total={exercises.length}
+            showLabel={false}
+          />
           <Text style={styles.progressText}>
             Question {currentIndex + 1} / {exercises.length}
           </Text>
@@ -311,7 +387,9 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
       </View>
 
       <ScrollView style={styles.content}>
-        <Text style={styles.questionText}>{currentExercise.question}</Text>
+        <Animated.View style={{ transform: [{ translateX: shakeAnim }] }}>
+          <Text style={styles.questionText}>{currentExercise.question}</Text>
+        </Animated.View>
 
         <View style={styles.optionsContainer}>
           {currentExercise.options?.map((option, index) => {
@@ -389,240 +467,279 @@ const ExerciseScreen: React.FC<Props> = ({ navigation, route }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  header: {
-    padding: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: '#e0e0e0',
-  },
-  progressContainer: {
-    marginBottom: 8,
-  },
-  progressBar: {
-    height: 8,
-    backgroundColor: '#e0e0e0',
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginBottom: 8,
-  },
-  progressFill: {
-    height: '100%',
-    backgroundColor: '#58CC02',
-  },
-  progressText: {
-    fontSize: 14,
-    color: '#666',
-    textAlign: 'center',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-  },
-  questionText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 24,
-    lineHeight: 28,
-  },
-  optionsContainer: {
-    marginBottom: 24,
-  },
-  optionButton: {
-    backgroundColor: '#f8f8f8',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-    borderWidth: 2,
-    borderColor: '#e0e0e0',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  optionButtonCorrect: {
-    backgroundColor: '#E8F5E9',
-    borderColor: '#58CC02',
-  },
-  optionButtonWrong: {
-    backgroundColor: '#FFEBEE',
-    borderColor: '#FF4B4B',
-  },
-  optionText: {
-    fontSize: 16,
-    color: '#333',
-    flex: 1,
-  },
-  optionTextAnswered: {
-    fontWeight: 'bold',
-  },
-  checkmark: {
-    fontSize: 24,
-    color: '#58CC02',
-  },
-  crossmark: {
-    fontSize: 24,
-    color: '#FF4B4B',
-  },
-  explanationContainer: {
-    backgroundColor: '#f8f8f8',
-    padding: 16,
-    borderRadius: 12,
-    marginTop: 16,
-  },
-  explanationTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 8,
-  },
-  explanationText: {
-    fontSize: 14,
-    color: '#666',
-    lineHeight: 20,
-  },
-  exampleBox: {
-    marginTop: 12,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-  },
-  exampleTitle: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#666',
-    marginBottom: 4,
-  },
-  exampleText: {
-    fontSize: 14,
-    fontStyle: 'italic',
-    color: '#333',
-  },
-  footer: {
-    padding: 16,
-    borderTopWidth: 1,
-    borderTopColor: '#e0e0e0',
-  },
-  nextButton: {
-    backgroundColor: '#58CC02',
-    padding: 16,
-    borderRadius: 12,
-    alignItems: 'center',
-  },
-  nextButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  loadingContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  loadingText: {
-    fontSize: 16,
-    color: '#666',
-  },
-  resultsContainer: {
-    padding: 20,
-    alignItems: 'center',
-  },
-  resultsEmoji: {
-    fontSize: 80,
-    marginBottom: 20,
-  },
-  resultsTitle: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    marginBottom: 24,
-  },
-  scoreBox: {
-    backgroundColor: '#58CC02',
-    padding: 24,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 24,
-    width: '100%',
-  },
-  scoreText: {
-    fontSize: 64,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  scoreSubtext: {
-    fontSize: 18,
-    color: '#fff',
-    marginTop: 8,
-  },
-  feedbackBox: {
-    backgroundColor: '#E8F5E9',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 24,
-    width: '100%',
-  },
-  feedbackText: {
-    fontSize: 16,
-    color: '#2E7D32',
-    textAlign: 'center',
-  },
-  xpBox: {
-    backgroundColor: '#FFF3CD',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 24,
-    width: '100%',
-    alignItems: 'center',
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF9600',
-  },
-  xpTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#FF9600',
-    marginBottom: 8,
-  },
-  levelUpText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#58CC02',
-    marginTop: 8,
-  },
-  streakText: {
-    fontSize: 16,
-    color: '#FF4B4B',
-    marginTop: 4,
-  },
-  statsBox: {
-    backgroundColor: '#f8f8f8',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 24,
-    width: '100%',
-  },
-  statsTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 12,
-  },
-  statsText: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 8,
-  },
-  finishButton: {
-    backgroundColor: '#1CB0F6',
-    padding: 18,
-    borderRadius: 12,
-    alignItems: 'center',
-    width: '100%',
-  },
-  finishButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-});
+const makeStyles = (c: Colors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: c.background,
+    },
+    header: {
+      padding: 16,
+      borderBottomWidth: 1,
+      borderBottomColor: c.border,
+    },
+    progressContainer: {
+      marginBottom: 8,
+      gap: 8,
+    },
+    progressText: {
+      fontSize: 14,
+      color: c.textMuted,
+      textAlign: 'center',
+    },
+    content: {
+      flex: 1,
+      padding: 20,
+    },
+    questionText: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 24,
+      lineHeight: 28,
+      color: c.text,
+    },
+    optionsContainer: {
+      marginBottom: 24,
+    },
+    optionButton: {
+      backgroundColor: c.surface,
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 12,
+      borderWidth: 2,
+      borderColor: c.border,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    optionButtonCorrect: {
+      backgroundColor: c.primaryHighlight,
+      borderColor: c.primary,
+    },
+    optionButtonWrong: {
+      backgroundColor: c.dangerHighlight,
+      borderColor: c.danger,
+    },
+    optionText: {
+      fontSize: 16,
+      color: c.textSecondary,
+      flex: 1,
+    },
+    optionTextAnswered: {
+      fontWeight: 'bold',
+    },
+    checkmark: {
+      fontSize: 24,
+      color: c.primary,
+    },
+    crossmark: {
+      fontSize: 24,
+      color: c.danger,
+    },
+    explanationContainer: {
+      backgroundColor: c.surface,
+      padding: 16,
+      borderRadius: 12,
+      marginTop: 16,
+    },
+    explanationTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 8,
+      color: c.text,
+    },
+    explanationText: {
+      fontSize: 14,
+      color: c.textMuted,
+      lineHeight: 20,
+    },
+    exampleBox: {
+      marginTop: 12,
+      paddingTop: 12,
+      borderTopWidth: 1,
+      borderTopColor: c.border,
+    },
+    exampleTitle: {
+      fontSize: 12,
+      fontWeight: 'bold',
+      color: c.textMuted,
+      marginBottom: 4,
+    },
+    exampleText: {
+      fontSize: 14,
+      fontStyle: 'italic',
+      color: c.textSecondary,
+    },
+    footer: {
+      padding: 16,
+      borderTopWidth: 1,
+      borderTopColor: c.border,
+    },
+    nextButton: {
+      backgroundColor: c.primary,
+      padding: 16,
+      borderRadius: 12,
+      alignItems: 'center',
+    },
+    nextButtonText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#fff',
+    },
+    loadingContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    loadingText: {
+      fontSize: 16,
+      color: c.textMuted,
+    },
+    resultsContainer: {
+      padding: 20,
+      alignItems: 'center',
+    },
+    resultsEmoji: {
+      fontSize: 80,
+      marginBottom: 20,
+    },
+    resultsTitle: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      marginBottom: 24,
+      color: c.text,
+    },
+    scoreBox: {
+      backgroundColor: c.primary,
+      padding: 24,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginBottom: 24,
+      width: '100%',
+    },
+    scoreText: {
+      fontSize: 64,
+      fontWeight: 'bold',
+      color: '#fff',
+    },
+    scoreSubtext: {
+      fontSize: 18,
+      color: '#fff',
+      marginTop: 8,
+    },
+    feedbackBox: {
+      backgroundColor: c.primaryHighlight,
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 24,
+      width: '100%',
+    },
+    feedbackText: {
+      fontSize: 16,
+      color: c.success,
+      textAlign: 'center',
+    },
+    xpBox: {
+      backgroundColor: c.warningHighlight,
+      padding: 20,
+      borderRadius: 12,
+      marginBottom: 24,
+      width: '100%',
+      alignItems: 'center',
+      borderLeftWidth: 4,
+      borderLeftColor: c.warning,
+    },
+    xpTitle: {
+      fontSize: 24,
+      fontWeight: 'bold',
+      color: c.warning,
+      marginBottom: 8,
+    },
+    levelUpText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: c.primary,
+      marginTop: 8,
+    },
+    streakText: {
+      fontSize: 16,
+      color: c.danger,
+      marginTop: 4,
+    },
+    dailyGoalText: {
+      fontSize: 16,
+      color: c.info,
+      fontWeight: 'bold',
+      marginTop: 4,
+    },
+    achievementsBox: {
+      backgroundColor: c.warningHighlight,
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 24,
+      width: '100%',
+      borderLeftWidth: 4,
+      borderLeftColor: c.warning,
+    },
+    achievementsTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: c.warning,
+      marginBottom: 12,
+      textAlign: 'center',
+    },
+    achievementRow: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      paddingVertical: 6,
+    },
+    achievementIcon: {
+      fontSize: 28,
+      marginRight: 12,
+    },
+    achievementBody: {
+      flex: 1,
+    },
+    achievementName: {
+      fontSize: 15,
+      fontWeight: 'bold',
+      color: c.text,
+    },
+    achievementDesc: {
+      fontSize: 12,
+      color: c.textMuted,
+      marginTop: 2,
+    },
+    statsBox: {
+      backgroundColor: c.surface,
+      padding: 16,
+      borderRadius: 12,
+      marginBottom: 24,
+      width: '100%',
+    },
+    statsTitle: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      marginBottom: 12,
+      color: c.text,
+    },
+    statsText: {
+      fontSize: 14,
+      color: c.textMuted,
+      marginBottom: 8,
+    },
+    finishButton: {
+      backgroundColor: c.info,
+      padding: 18,
+      borderRadius: 12,
+      alignItems: 'center',
+      width: '100%',
+    },
+    finishButtonText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#fff',
+    },
+  });
 
 export default ExerciseScreen;

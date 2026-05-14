@@ -16,6 +16,7 @@ export const generateExercises = (
     const exerciseTypes: ExerciseType[] = [
       'multiple_choice',
       'fill_blank',
+      'identify_nuance',
       'match_definition',
       'true_false',
     ];
@@ -48,6 +49,12 @@ const generateExercise = (
       return generateMatchDefinition(word, allWords);
     case 'true_false':
       return generateTrueFalse(word, allWords);
+    case 'identify_nuance':
+      // Si pas de paire de nuance définie, fallback sur multiple_choice
+      return (
+        generateIdentifyNuance(word, allWords) ??
+        generateMultipleChoice(word, allWords)
+      );
     default:
       return null;
   }
@@ -145,6 +152,41 @@ const generateMatchDefinition = (word: Word, allWords: Word[]): Exercise => {
     options,
     correctAnswer: correctIndex,
     explanation: `Le mot est "${word.word}".`,
+  };
+};
+
+/**
+ * Génère un exercice de discrimination de nuance entre deux mots proches.
+ * L'utilisateur voit la définition d'un mot et doit le distinguer de son
+ * partenaire de nuance (un seul distracteur, très proche sémantiquement).
+ *
+ * Renvoie null si le mot n'a pas de paire `nuance_with` exploitable
+ * (le caller fait alors un fallback sur un autre type).
+ */
+const generateIdentifyNuance = (
+  word: Word,
+  allWords: Word[]
+): Exercise | null => {
+  if (!word.nuance_with || word.nuance_with.length === 0) return null;
+
+  const partner = allWords.find(
+    (w) =>
+      w.id !== word.id &&
+      word.nuance_with!.some((nw) => nw.toLowerCase() === w.word.toLowerCase())
+  );
+  if (!partner) return null;
+
+  const options = shuffleArray([word.word, partner.word]);
+  const correctIndex = options.indexOf(word.word);
+
+  return {
+    id: `in_${word.id}_${Date.now()}`,
+    type: 'identify_nuance',
+    word,
+    question: `Distinguez la nuance — quel mot correspond à cette définition ?\n\n"${word.definition}"`,
+    options,
+    correctAnswer: correctIndex,
+    explanation: `"${word.word}" : ${word.definition}\n"${partner.word}" : ${partner.definition}`,
   };
 };
 

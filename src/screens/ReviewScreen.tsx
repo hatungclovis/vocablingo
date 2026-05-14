@@ -10,6 +10,8 @@ import { StackNavigationProp } from '@react-navigation/stack';
 import { RootStackParamList } from '../navigation/AppNavigator';
 import { getWordsForReview } from '../services/database';
 import { Word } from '../types';
+import { useTheme } from '../theme/ThemeContext';
+import { Colors } from '../theme/colors';
 
 type ReviewScreenNavigationProp = StackNavigationProp<
   RootStackParamList,
@@ -21,6 +23,9 @@ interface Props {
 }
 
 const ReviewScreen: React.FC<Props> = ({ navigation }) => {
+  const { colors } = useTheme();
+  const styles = makeStyles(colors);
+
   const [words, setWords] = useState<Word[]>([]);
 
   useEffect(() => {
@@ -98,99 +103,101 @@ const ReviewScreen: React.FC<Props> = ({ navigation }) => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  content: {
-    flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-  },
-  emoji: {
-    fontSize: 80,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginBottom: 32,
-  },
-  infoBox: {
-    backgroundColor: '#E3F2FD',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 24,
-    borderLeftWidth: 4,
-    borderLeftColor: '#1CB0F6',
-  },
-  infoTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#0D47A1',
-  },
-  infoText: {
-    fontSize: 14,
-    color: '#1565C0',
-  },
-  emptyBox: {
-    backgroundColor: '#E8F5E9',
-    padding: 20,
-    borderRadius: 12,
-    marginBottom: 24,
-    borderLeftWidth: 4,
-    borderLeftColor: '#58CC02',
-  },
-  emptyTitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-    marginBottom: 8,
-    color: '#2E7D32',
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#388E3C',
-  },
-  startButton: {
-    backgroundColor: '#1CB0F6',
-    padding: 18,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  startButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  learnButton: {
-    backgroundColor: '#58CC02',
-    padding: 18,
-    borderRadius: 12,
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  learnButtonText: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#fff',
-  },
-  tipBox: {
-    backgroundColor: '#FFF3CD',
-    padding: 16,
-    borderRadius: 12,
-    borderLeftWidth: 4,
-    borderLeftColor: '#FF9600',
-  },
-  tipText: {
-    fontSize: 12,
-    color: '#856404',
-    textAlign: 'center',
-  },
-});
+const makeStyles = (c: Colors) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: c.background,
+    },
+    content: {
+      flex: 1,
+      padding: 20,
+      justifyContent: 'center',
+    },
+    emoji: {
+      fontSize: 80,
+      textAlign: 'center',
+      marginBottom: 20,
+    },
+    title: {
+      fontSize: 28,
+      fontWeight: 'bold',
+      textAlign: 'center',
+      marginBottom: 32,
+      color: c.text,
+    },
+    infoBox: {
+      backgroundColor: c.infoHighlight,
+      padding: 20,
+      borderRadius: 12,
+      marginBottom: 24,
+      borderLeftWidth: 4,
+      borderLeftColor: c.info,
+    },
+    infoTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 8,
+      color: c.info,
+    },
+    infoText: {
+      fontSize: 14,
+      color: c.info,
+    },
+    emptyBox: {
+      backgroundColor: c.primaryHighlight,
+      padding: 20,
+      borderRadius: 12,
+      marginBottom: 24,
+      borderLeftWidth: 4,
+      borderLeftColor: c.primary,
+    },
+    emptyTitle: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginBottom: 8,
+      color: c.success,
+    },
+    emptyText: {
+      fontSize: 14,
+      color: c.success,
+    },
+    startButton: {
+      backgroundColor: c.info,
+      padding: 18,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    startButtonText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#fff',
+    },
+    learnButton: {
+      backgroundColor: c.primary,
+      padding: 18,
+      borderRadius: 12,
+      alignItems: 'center',
+      marginBottom: 16,
+    },
+    learnButtonText: {
+      fontSize: 18,
+      fontWeight: 'bold',
+      color: '#fff',
+    },
+    tipBox: {
+      backgroundColor: c.warningHighlight,
+      padding: 16,
+      borderRadius: 12,
+      borderLeftWidth: 4,
+      borderLeftColor: c.warning,
+    },
+    tipText: {
+      fontSize: 12,
+      color: c.warning,
+      textAlign: 'center',
+    },
+  });
 
 export default ReviewScreen;

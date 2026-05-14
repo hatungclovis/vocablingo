@@ -1,7 +1,8 @@
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { Theme, Word } from '../types';
+import { useTheme } from '../theme/ThemeContext';
 
 // Import screens
 import HomeScreen from '../screens/HomeScreen';
@@ -10,6 +11,10 @@ import LearningScreen from '../screens/LearningScreen';
 import ReviewScreen from '../screens/ReviewScreen';
 import ExerciseScreen from '../screens/ExerciseScreen';
 import ProgressScreen from '../screens/ProgressScreen';
+import AchievementsScreen from '../screens/AchievementsScreen';
+import WordDetailScreen from '../screens/WordDetailScreen';
+import SearchScreen from '../screens/SearchScreen';
+import SettingsScreen from '../screens/SettingsScreen';
 
 // Define navigation types
 export type RootStackParamList = {
@@ -19,23 +24,42 @@ export type RootStackParamList = {
   Review: undefined;
   Exercise: { words: Word[]; themeId?: number };
   Progress: undefined;
+  Achievements: undefined;
+  WordDetail: { word: Word };
+  Search: undefined;
+  Settings: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
 
 const AppNavigator: React.FC = () => {
+  const { colors, isDark } = useTheme();
+
+  const navTheme = {
+    ...(isDark ? DarkTheme : DefaultTheme),
+    colors: {
+      ...(isDark ? DarkTheme.colors : DefaultTheme.colors),
+      background: colors.background,
+      card: colors.primary,
+      text: colors.textOnPrimary,
+      border: colors.border,
+      primary: colors.primary,
+    },
+  };
+
   return (
-    <NavigationContainer>
+    <NavigationContainer theme={navTheme}>
       <Stack.Navigator
         initialRouteName="Home"
         screenOptions={{
           headerStyle: {
-            backgroundColor: '#58CC02',
+            backgroundColor: colors.primary,
           },
-          headerTintColor: '#fff',
+          headerTintColor: colors.textOnPrimary,
           headerTitleStyle: {
             fontWeight: 'bold',
           },
+          cardStyle: { backgroundColor: colors.background },
         }}
       >
         <Stack.Screen
@@ -67,6 +91,26 @@ const AppNavigator: React.FC = () => {
           name="Progress"
           component={ProgressScreen}
           options={{ title: 'Progression' }}
+        />
+        <Stack.Screen
+          name="Achievements"
+          component={AchievementsScreen}
+          options={{ title: 'Trophées' }}
+        />
+        <Stack.Screen
+          name="WordDetail"
+          component={WordDetailScreen}
+          options={{ title: 'Détails du mot' }}
+        />
+        <Stack.Screen
+          name="Search"
+          component={SearchScreen}
+          options={{ title: 'Rechercher' }}
+        />
+        <Stack.Screen
+          name="Settings"
+          component={SettingsScreen}
+          options={{ title: 'Paramètres' }}
         />
       </Stack.Navigator>
     </NavigationContainer>

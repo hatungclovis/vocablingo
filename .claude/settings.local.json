@@ -17,7 +17,11 @@
       "Bash(echo \"tsc exit=$?\")",
       "Write(/Users/hatungclovis/Desktop/Programming/vocablingo/.vocab_chunks/**)",
       "Bash(node *)",
-      "Bash(eas --version)"
+      "Bash(eas --version)",
+      "Bash(python3 *)",
+      "Bash(pnpm test *)",
+      "Bash(pnpm remove *)",
+      "Bash(npm view *)"
     ]
   }
 }

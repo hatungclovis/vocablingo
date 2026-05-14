@@ -617,6 +617,9 @@
       ],
       "antonyms": [
         "ignorer"
+      ],
+      "nuance_with": [
+        "contempler"
       ]
     },
     {
@@ -632,7 +635,10 @@
         "admirer",
         "regarder"
       ],
-      "antonyms": []
+      "antonyms": [],
+      "nuance_with": [
+        "observer"
+      ]
     },
     {
       "word": "efficace",
@@ -649,6 +655,9 @@
       ],
       "antonyms": [
         "inefficace"
+      ],
+      "nuance_with": [
+        "efficient"
       ]
     },
     {
@@ -666,6 +675,9 @@
       ],
       "antonyms": [
         "gaspilleur"
+      ],
+      "nuance_with": [
+        "efficace"
       ]
     },
     {
@@ -681,7 +693,10 @@
         "résider",
         "loger"
       ],
-      "antonyms": []
+      "antonyms": [],
+      "nuance_with": [
+        "demeurer"
+      ]
     },
     {
       "word": "demeurer",
@@ -699,6 +714,9 @@
       ],
       "antonyms": [
         "partir"
+      ],
+      "nuance_with": [
+        "habiter"
       ]
     },
     {
@@ -3054,6 +3072,9 @@
       ],
       "antonyms": [
         "ignorer"
+      ],
+      "nuance_with": [
+        "entendre"
       ]
     },
     {
@@ -3069,7 +3090,10 @@
         "percevoir",
         "ouïr"
       ],
-      "antonyms": []
+      "antonyms": [],
+      "nuance_with": [
+        "écouter"
+      ]
     },
     {
       "word": "savoir",
@@ -3085,6 +3109,9 @@
       ],
       "antonyms": [
         "ignorer"
+      ],
+      "nuance_with": [
+        "connaître"
       ]
     },
     {
@@ -3101,6 +3128,9 @@
       ],
       "antonyms": [
         "ignorer"
+      ],
+      "nuance_with": [
+        "savoir"
       ]
     },
     {
@@ -3148,6 +3178,9 @@
       ],
       "antonyms": [
         "emporter"
+      ],
+      "nuance_with": [
+        "amener"
       ]
     },
     {
@@ -3165,6 +3198,9 @@
       ],
       "antonyms": [
         "emmener"
+      ],
+      "nuance_with": [
+        "apporter"
       ]
     },
     {
@@ -3181,6 +3217,9 @@
       ],
       "antonyms": [
         "apporter"
+      ],
+      "nuance_with": [
+        "emmener"
       ]
     },
     {
@@ -3197,6 +3236,9 @@
       ],
       "antonyms": [
         "amener"
+      ],
+      "nuance_with": [
+        "emporter"
       ]
     },
     {
@@ -3341,6 +3383,9 @@
       ],
       "antonyms": [
         "bien-être"
+      ],
+      "nuance_with": [
+        "peine"
       ]
     },
     {
@@ -3358,6 +3403,9 @@
       ],
       "antonyms": [
         "facilité"
+      ],
+      "nuance_with": [
+        "douleur"
       ]
     },
     {
@@ -3407,6 +3455,9 @@
       ],
       "antonyms": [
         "réfuter"
+      ],
+      "nuance_with": [
+        "démontrer"
       ]
     },
     {
@@ -3424,6 +3475,9 @@
       ],
       "antonyms": [
         "infirmer"
+      ],
+      "nuance_with": [
+        "prouver"
       ]
     },
     {
@@ -3440,6 +3494,9 @@
       ],
       "antonyms": [
         "ignorer"
+      ],
+      "nuance_with": [
+        "saisir"
       ]
     },
     {
@@ -3455,7 +3512,10 @@
         "comprendre",
         "appréhender"
       ],
-      "antonyms": []
+      "antonyms": [],
+      "nuance_with": [
+        "comprendre"
+      ]
     },
     {
       "word": "permettre",
@@ -16242,6 +16302,352 @@
       "synonyms": [],
       "antonyms": [
         "microéconomie"
+      ]
+    },
+    {
+      "word": "flâner",
+      "definition": "Se promener sans but précis, en prenant son temps.",
+      "theme_id": 6,
+      "examples": [
+        "J'aime flâner dans les ruelles du vieux quartier."
+      ],
+      "level": "B2",
+      "synonyms": [
+        "déambuler",
+        "errer"
+      ],
+      "antonyms": [
+        "se presser"
+      ]
+    },
+    {
+      "word": "sillonner",
+      "definition": "Parcourir un territoire en tous sens.",
+      "theme_id": 6,
+      "examples": [
+        "Le car sillonne la campagne provençale."
+      ],
+      "level": "C1",
+      "synonyms": [
+        "parcourir",
+        "traverser"
+      ],
+      "antonyms": []
+    },
+    {
+      "word": "pittoresque",
+      "definition": "Qui frappe par son charme, son caractère original et coloré.",
+      "theme_id": 6,
+      "examples": [
+        "Un village pittoresque accroché à la falaise."
+      ],
+      "level": "B2",
+      "synonyms": [
+        "charmant",
+        "typique"
+      ],
+      "antonyms": [
+        "banal"
+      ]
+    },
+    {
+      "word": "évasion",
+      "definition": "Fait de s'évader de la routine, du quotidien.",
+      "theme_id": 6,
+      "examples": [
+        "Ce voyage est une véritable évasion."
+      ],
+      "level": "B2",
+      "synonyms": [
+        "fuite",
+        "échappée"
+      ],
+      "antonyms": [
+        "routine"
+      ]
+    },
+    {
+      "word": "décalage",
+      "definition": "Différence d'heure entre deux fuseaux horaires.",
+      "theme_id": 6,
+      "examples": [
+        "Le décalage horaire avec le Japon est de huit heures."
+      ],
+      "level": "B1",
+      "synonyms": [
+        "différence",
+        "écart"
+      ],
+      "antonyms": []
+    },
+    {
+      "word": "pérégrination",
+      "definition": "Long voyage parsemé de détours et d'étapes.",
+      "theme_id": 6,
+      "examples": [
+        "Ses pérégrinations l'ont mené aux quatre coins du monde."
+      ],
+      "level": "C1",
+      "synonyms": [
+        "voyage",
+        "errance"
+      ],
+      "antonyms": [
+        "sédentarité"
+      ]
+    },
+    {
+      "word": "itinérant",
+      "definition": "Qui se déplace sans s'établir durablement.",
+      "theme_id": 6,
+      "examples": [
+        "Un marchand itinérant parcourt les marchés."
+      ],
+      "level": "B2",
+      "synonyms": [
+        "ambulant",
+        "nomade"
+      ],
+      "antonyms": [
+        "sédentaire"
+      ]
+    },
+    {
+      "word": "voyageur",
+      "definition": "Personne qui se déplace, qui voyage.",
+      "theme_id": 6,
+      "examples": [
+        "Les voyageurs sont priés de monter à bord."
+      ],
+      "level": "B1",
+      "synonyms": [
+        "passager",
+        "touriste"
+      ],
+      "antonyms": []
+    },
+    {
+      "word": "étape",
+      "definition": "Lieu où l'on s'arrête au cours d'un voyage.",
+      "theme_id": 6,
+      "examples": [
+        "La prochaine étape sera Lyon."
+      ],
+      "level": "B1",
+      "synonyms": [
+        "halte",
+        "pause"
+      ],
+      "antonyms": []
+    },
+    {
+      "word": "empirique",
+      "definition": "Qui se fonde sur l'expérience plutôt que sur la théorie.",
+      "theme_id": 9,
+      "examples": [
+        "Une méthode empirique permet de valider l'hypothèse."
+      ],
+      "level": "C1",
+      "synonyms": [
+        "expérimental"
+      ],
+      "antonyms": [
+        "théorique"
+      ]
+    },
+    {
+      "word": "protocole",
+      "definition": "Ensemble de règles définissant le déroulement d'une expérience.",
+      "theme_id": 9,
+      "examples": [
+        "Le protocole expérimental garantit la reproductibilité."
+      ],
+      "level": "B2",
+      "synonyms": [
+        "procédure"
+      ],
+      "antonyms": []
+    },
+    {
+      "word": "corroborer",
+      "definition": "Confirmer une hypothèse par des preuves convergentes.",
+      "theme_id": 9,
+      "examples": [
+        "Les résultats corroborent la théorie initiale."
+      ],
+      "level": "C1",
+      "synonyms": [
+        "confirmer",
+        "attester"
+      ],
+      "antonyms": [
+        "contredire"
+      ]
+    },
+    {
+      "word": "phénomène",
+      "definition": "Fait observable, manifestation naturelle.",
+      "theme_id": 9,
+      "examples": [
+        "Le phénomène de l'érosion façonne les paysages."
+      ],
+      "level": "B1",
+      "synonyms": [
+        "fait",
+        "manifestation"
+      ],
+      "antonyms": []
+    },
+    {
+      "word": "organisme",
+      "definition": "Être vivant individuel, animal ou végétal.",
+      "theme_id": 9,
+      "examples": [
+        "Un organisme unicellulaire ne possède qu'une seule cellule."
+      ],
+      "level": "B1",
+      "synonyms": [
+        "être vivant"
+      ],
+      "antonyms": []
+    },
+    {
+      "word": "climatique",
+      "definition": "Relatif au climat et à ses variations.",
+      "theme_id": 9,
+      "examples": [
+        "Le réchauffement climatique inquiète les scientifiques."
+      ],
+      "level": "B1",
+      "synonyms": [],
+      "antonyms": []
+    },
+    {
+      "word": "métabolisme",
+      "definition": "Ensemble des transformations chimiques dans un organisme vivant.",
+      "theme_id": 9,
+      "examples": [
+        "Le sport accélère le métabolisme."
+      ],
+      "level": "B2",
+      "synonyms": [],
+      "antonyms": []
+    },
+    {
+      "word": "observation",
+      "definition": "Action d'examiner attentivement un phénomène pour le comprendre.",
+      "theme_id": 9,
+      "examples": [
+        "L'observation est la première étape de la démarche scientifique."
+      ],
+      "level": "B1",
+      "synonyms": [
+        "examen"
+      ],
+      "antonyms": []
+    },
+    {
+      "word": "législation",
+      "definition": "Ensemble des lois en vigueur dans un pays ou un domaine.",
+      "theme_id": 12,
+      "examples": [
+        "La législation européenne évolue constamment."
+      ],
+      "level": "B2",
+      "synonyms": [
+        "lois",
+        "droit"
+      ],
+      "antonyms": []
+    },
+    {
+      "word": "clivage",
+      "definition": "Division profonde entre des groupes ou des opinions opposés.",
+      "theme_id": 12,
+      "examples": [
+        "Un clivage générationnel traverse le débat."
+      ],
+      "level": "C1",
+      "synonyms": [
+        "division",
+        "fracture"
+      ],
+      "antonyms": [
+        "consensus"
+      ]
+    },
+    {
+      "word": "consensus",
+      "definition": "Accord général au sein d'un groupe.",
+      "theme_id": 12,
+      "examples": [
+        "Trouver un consensus prend du temps."
+      ],
+      "level": "B2",
+      "synonyms": [
+        "accord",
+        "entente"
+      ],
+      "antonyms": [
+        "dissensus",
+        "désaccord"
+      ]
+    },
+    {
+      "word": "électorat",
+      "definition": "Ensemble des citoyens ayant le droit de vote.",
+      "theme_id": 12,
+      "examples": [
+        "L'électorat populaire s'est largement mobilisé."
+      ],
+      "level": "B2",
+      "synonyms": [],
+      "antonyms": []
+    },
+    {
+      "word": "plébisciter",
+      "definition": "Approuver massivement par un vote ou un soutien public.",
+      "theme_id": 12,
+      "examples": [
+        "La réforme a été plébiscitée par la base militante."
+      ],
+      "level": "C1",
+      "synonyms": [
+        "approuver",
+        "élire"
+      ],
+      "antonyms": [
+        "rejeter"
+      ]
+    },
+    {
+      "word": "gouvernance",
+      "definition": "Manière de gouverner ou d'administrer une entité.",
+      "theme_id": 12,
+      "examples": [
+        "La bonne gouvernance suppose transparence et responsabilité."
+      ],
+      "level": "C1",
+      "synonyms": [
+        "administration",
+        "gestion"
+      ],
+      "antonyms": []
+    },
+    {
+      "word": "polémique",
+      "definition": "Débat vif et public sur un sujet controversé.",
+      "theme_id": 12,
+      "examples": [
+        "Sa déclaration a déclenché une vive polémique."
+      ],
+      "level": "B2",
+      "synonyms": [
+        "controverse",
+        "débat"
+      ],
+      "antonyms": [
+        "consensus"
       ]
     }
   ]
